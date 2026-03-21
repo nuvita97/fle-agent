@@ -89,8 +89,8 @@ a:hover { text-decoration: underline; }
   padding: 56px 24px 48px;
   text-align: center;
 }
-.hero-inner { max-width: 600px; margin: 0 auto; }
-.hero h1 { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
+.hero-inner { max-width: 900px; margin: 0 auto; }
+.hero h1 { font-size: clamp(1rem, 2.8vw, 2rem); font-weight: 700; margin-bottom: 10px; white-space: nowrap; }
 .hero-sub { color: rgba(255,255,255,0.85); font-size: 1.05rem; }
 
 /* ── Container ───────────────────────────────────────────── */
@@ -467,7 +467,7 @@ a:hover { text-decoration: underline; }
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 600px) {
   .card { padding: 20px 16px; }
-  .hero h1 { font-size: 1.5rem; }
+  .hero h1 { font-size: clamp(0.75rem, 4.5vw, 1.5rem); }
   .form-row { grid-template-columns: 1fr; }
   .topic-grid { grid-template-columns: repeat(2, 1fr); }
   .ex-header-inner { flex-direction: column; }
