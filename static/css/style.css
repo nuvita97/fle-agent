@@ -74,6 +74,9 @@ a:hover { text-decoration: underline; }
 .nav-links { display: flex; align-items: center; gap: 20px; }
 .nav-links a { color: rgba(255,255,255,0.85); font-size: 0.9rem; text-decoration: none; }
 .nav-links a:hover { color: var(--white); }
+.nav-social { display: flex; align-items: center; gap: 4px; }
+.nav-icon-btn { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8); padding: 4px; border-radius: 5px; transition: color 0.15s, background 0.15s; }
+.nav-icon-btn:hover { color: var(--white); background: rgba(255,255,255,0.15); text-decoration: none; }
 .lang-toggle { display: flex; align-items: center; gap: 2px; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 2px; }
 .lang-btn { padding: 3px 9px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.7) !important; transition: background 0.15s, color 0.15s; }
 .lang-btn:hover { color: var(--white) !important; text-decoration: none; }
