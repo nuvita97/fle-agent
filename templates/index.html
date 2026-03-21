@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block title %}FLE-agent — Exercices de Français{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <div class="hero-inner">
+    <h1>{{ t.hero_title }}</h1>
+    <p class="hero-sub">{{ t.hero_sub }}</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Exercise generator form -->
+  <section class="card generator-card">
+    <h2 class="section-title">{{ t.generate_title }}</h2>
+
+    <form action="{{ url_for('generate') }}" method="POST" id="generator-form">
+
+      <!-- Level selector -->
+      <div class="field-group">
+        <label class="field-label">{{ t.level_label }}</label>
+        <div class="level-buttons">
+          {% for lvl in levels %}
+          <label class="level-btn">
+            <input type="radio" name="level" value="{{ lvl }}" {% if lvl == 'B1' %}checked{% endif %}>
+            <span>{{ lvl }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Topic selector -->
+      <div class="field-group">
+        <label class="field-label">{{ t.topic_label }}</label>
+        <div class="topic-grid">
+          {% for key, display in topics.items() %}
+          <label class="topic-card">
+            <input type="radio" name="topic" value="{{ key }}" {% if key == 'voyages_tourisme' %}checked{% endif %}>
+            <span class="topic-icon">{{ topic_icons[key] }}</span>
+            <span class="topic-name">{{ display }}</span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary btn-lg btn-full">
+        {{ t.generate_btn }}
+      </button>
+    </form>
+  </section>
+
+  <!-- Newsletter subscription -->
+  <section class="card newsletter-card">
+    <div class="newsletter-header">
+      <span class="newsletter-icon">📬</span>
+      <div>
+        <h2 class="section-title">{{ t.newsletter_title }}</h2>
+        <p class="section-sub">{{ t.newsletter_sub }}</p>
+      </div>
+    </div>
+
+    <form action="{{ url_for('subscribe') }}" method="POST" class="subscribe-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label for="sub-name">{{ t.name_label }}</label>
+          <input type="text" id="sub-name" name="name" placeholder="{{ t.name_placeholder }}" required>
+        </div>
+        <div class="form-field">
+          <label for="sub-email">{{ t.email_label }}</label>
+          <input type="email" id="sub-email" name="email" placeholder="{{ t.email_placeholder }}" required>
+        </div>
+      </div>
+
+      {% if sub_error %}
+      <div class="alert alert-error">{{ sub_error }}</div>
+      {% endif %}
+      {% if sub_success %}
+      <div class="alert alert-success">{{ sub_success }}</div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-accent">{{ t.subscribe_btn }}</button>
+    </form>
+  </section>
+
+</div>
+{% endblock %}

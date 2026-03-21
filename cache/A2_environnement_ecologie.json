@@ -1,0 +1,127 @@
+{
+  "text": "Sur notre page ‘L’Écologie Expliquée aux Enfants’, nous guidons les enfants à travers les  concepts clés de l’écologie  de manière simple et engageante. De la conservation de la nature au recyclage, en passant par le changement climatique, nous proposons des  définitions adaptées  à l’âge pour  aider votre enfant à comprendre  ces sujets importants. Notre but est d’inspirer une génération de protecteurs de l’environnement en éduquant les enfants sur l’importance de  l’écologie  et  l’éco-responsabilité .\n\nC’est comme quand tu laisses une pomme dans le jardin, et qu’après un certain temps, elle disparaît parce que la nature la décompose et l’utilise pour nourrir les plantes et les animaux.\n\nC’est quand tu prends des restes de nourriture et des feuilles mortes et que tu les laisses se décomposer pour faire un sol riche qui aide les plantes à pousser.\n\nC’est comme quand tu prends soin de tes jouets pour qu’ils ne se cassent pas. Dans la nature, cela signifie prendre soin des plantes, des animaux et de l’environnement pour qu’ils restent en bonne santé et heureux.\n\nC’est quand les gens coupent trop d’arbres et ne les replantent pas. Cela peut causer des problèmes pour les animaux qui vivent dans les arbres et cela peut aussi contribuer au réchauffement climatique.\n\nC’est comme un grand cercle de partage et de réutilisation des choses. Imagine que tu as un vieux jouet dont tu ne veux plus. Au lieu de le jeter à la poubelle, tu pourrais le donner à quelqu’un d’autre qui pourrait l’utiliser. Ou peut-être que tu pourrais prendre une partie de ce jouet et l’utiliser pour faire quelque chose de nouveau. C’est ce que signifie l’économie circulaire – au lieu de jeter les choses quand nous avons fini de les utiliser, nous essayons de les réutiliser ou de les transformer en quelque chose de nouveau. C’est une façon de prendre soin de notre planète en réduisant les déchets.\n\nCela signifie prendre soin de notre planète en faisant des choses qui ne lui font pas de mal. Imagine que tu as une petite plante.\n\nC’est l’énergie que nous obtenons du vent.",
+  "url": "https://comptines-et-decouvertes.com/lexique-pour-les-enfants/lecologie-expliquee-aux-enfants/",
+  "site_name": "comptines-et-decouvertes.com",
+  "word_count": 346,
+  "questions": [
+    {
+      "question": "Selon le texte, qu'est-ce que la décomposition dans la nature ?",
+      "choices": {
+        "A": "La nature décompose des choses comme une pomme pour nourrir les plantes et les animaux.",
+        "B": "Les enfants jouent avec une pomme dans le jardin.",
+        "C": "On plante des pommes dans le jardin pour les manger.",
+        "D": "Les animaux mangent les plantes dans le jardin."
+      },
+      "answer": "A",
+      "explanation": "Le texte explique : « C'est comme quand tu laisses une pomme dans le jardin, et qu'après un certain temps, elle disparaît parce que la nature la décompose et l'utilise pour nourrir les plantes et les animaux. »"
+    },
+    {
+      "question": "Qu'est-ce que le compostage selon le texte ?",
+      "choices": {
+        "A": "Couper des arbres pour faire du bois.",
+        "B": "Laisser des restes de nourriture et des feuilles mortes se décomposer pour faire un sol riche.",
+        "C": "Donner ses vieux jouets à d'autres enfants.",
+        "D": "Utiliser l'énergie du vent pour faire pousser les plantes."
+      },
+      "answer": "B",
+      "explanation": "Le texte dit : « C'est quand tu prends des restes de nourriture et des feuilles mortes et que tu les laisses se décomposer pour faire un sol riche qui aide les plantes à pousser. »"
+    },
+    {
+      "question": "Pourquoi la déforestation est-elle un problème ?",
+      "choices": {
+        "A": "Parce que les plantes poussent trop vite.",
+        "B": "Parce que les enfants n'ont plus de jouets.",
+        "C": "Parce que les animaux perdent leur habitat et cela contribue au réchauffement climatique.",
+        "D": "Parce que l'énergie du vent disparaît."
+      },
+      "answer": "C",
+      "explanation": "Le texte explique que couper trop d'arbres « peut causer des problèmes pour les animaux qui vivent dans les arbres et cela peut aussi contribuer au réchauffement climatique. »"
+    },
+    {
+      "question": "Comment le texte explique-t-il l'économie circulaire ?",
+      "choices": {
+        "A": "C'est jeter les vieux jouets à la poubelle.",
+        "B": "C'est couper des arbres et les replanter.",
+        "C": "C'est utiliser l'énergie du soleil pour faire tourner les machines.",
+        "D": "C'est réutiliser ou transformer les choses au lieu de les jeter pour réduire les déchets."
+      },
+      "answer": "D",
+      "explanation": "Le texte dit : « au lieu de jeter les choses quand nous avons fini de les utiliser, nous essayons de les réutiliser ou de les transformer en quelque chose de nouveau » et que c'est « une façon de prendre soin de notre planète en réduisant les déchets. »"
+    },
+    {
+      "question": "D'où vient l'énergie éolienne selon le texte ?",
+      "choices": {
+        "A": "C'est l'énergie que nous obtenons du vent.",
+        "B": "C'est l'énergie que nous obtenons du soleil.",
+        "C": "C'est l'énergie que nous obtenons de l'eau.",
+        "D": "C'est l'énergie que nous obtenons des plantes."
+      },
+      "answer": "A",
+      "explanation": "Le texte indique clairement : « C'est l'énergie que nous obtenons du vent. »"
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "l'écologie",
+      "pos": "nom",
+      "definition_fr": "La science qui étudie les relations entre les êtres vivants et leur environnement.",
+      "translation_en": "ecology"
+    },
+    {
+      "word": "le recyclage",
+      "pos": "nom",
+      "definition_fr": "L'action de transformer des déchets pour les utiliser à nouveau.",
+      "translation_en": "recycling"
+    },
+    {
+      "word": "se décomposer",
+      "pos": "verbe",
+      "definition_fr": "Se transformer lentement en éléments plus simples, comme une feuille morte dans la terre.",
+      "translation_en": "to decompose"
+    },
+    {
+      "word": "les déchets",
+      "pos": "nom",
+      "definition_fr": "Les choses dont on n'a plus besoin et que l'on jette.",
+      "translation_en": "waste / rubbish"
+    },
+    {
+      "word": "la déforestation",
+      "pos": "nom",
+      "definition_fr": "L'action de couper trop d'arbres sans les replanter.",
+      "translation_en": "deforestation"
+    },
+    {
+      "word": "réutiliser",
+      "pos": "verbe",
+      "definition_fr": "Utiliser à nouveau quelque chose au lieu de le jeter.",
+      "translation_en": "to reuse"
+    },
+    {
+      "word": "le réchauffement climatique",
+      "pos": "expression",
+      "definition_fr": "L'augmentation progressive de la température sur Terre à cause des activités humaines.",
+      "translation_en": "global warming"
+    },
+    {
+      "word": "l'éco-responsabilité",
+      "pos": "nom",
+      "definition_fr": "Le fait d'agir de manière responsable pour protéger l'environnement.",
+      "translation_en": "eco-responsibility"
+    },
+    {
+      "word": "nourrir",
+      "pos": "verbe",
+      "definition_fr": "Donner de la nourriture à quelqu'un ou quelque chose pour qu'il grandisse et reste en vie.",
+      "translation_en": "to feed / to nourish"
+    },
+    {
+      "word": "la conservation",
+      "pos": "nom",
+      "definition_fr": "L'action de protéger et de préserver la nature et les êtres vivants.",
+      "translation_en": "conservation"
+    }
+  ],
+  "level": "A2",
+  "topic": "environnement_ecologie"
+}

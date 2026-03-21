@@ -1,0 +1,127 @@
+{
+  "text": "La France est la terre d’élection du tourisme de type Airbnb et les maires devraient avoir bientôt des outils pour identifier les propriétaires et les locataires, et percevoir les recettes fiscales liées à ces pratiques, explique l’économiste Philippe Askenazy dans sa chronique au « Monde ».\n\nPublié le 18 mars 2026 à 15h30     Philippe Askenazy\n\nL’actuel dirigeant de la division « expérience » (parcs et croisières) succède à Bob Iger. Son bilan : avoir transformé les disneylands de la planète en d’incroyables machines à cash. Ses défis : adapter l’entreprise à la puissance du streaming et à la déferlante à venir de l’IA.\n\nPublié le 17 mars 2026 à 17h30     Arnaud Leparmentier\n\nL’Autorité de la concurrence a sanctionné le syndicat qui regroupe les écoles de ski ESF, en raison de clauses qui empêchent ses moniteurs, en théorie indépendants, à travailler pour eux-mêmes ou d’autres structures.\n\nPublié le 17 mars 2026 à 12h34, modifié le 17 mars 2026 à 12h43     Jessica Gourdon\n\nOutre la flambée du cours du pétrole qui va provoquer une hausse des prix des billets d’avion, la guerre en Iran désorganise la structure des flux de trafic entre l’Europe, le Moyen-Orient, l’Inde, l’Asie… Des axes sur lesquels les compagnies du Golfe, aujourd’hui fragilisées, étaient des acteurs majeurs, analyse dans sa chronique Fabrice Gliszczynski, journaliste au service Economie.\n\nPublié le 16 mars 2026 à 11h58     Fabrice Gliszczynski\n\nAlors que le territoire de Puisaye-Forterre connaît un nouvel élan grâce au tourisme, des habitants redoutent l’effet repoussoir de gros projets agrivoltaïques. La problématique s’invite dans la campagne électorale.\n\nPublié le 11 mars 2026 à 15h00     Jessica Gourdon\n\nAlors que plusieurs communes en altitude doivent accueillir les Jeux olympiques d’hiver en 2030, certaines, notamment dans les pays de Savoie, sont parcourues par des débats sur leur avenir.\n\nPublié le 08 mars 2026 à 11h00, modifié le 08 mars 2026 à 17h47      Fanny Hardy\n\nLa priorité est donnée à l’accroissement des dépenses des touristes internationaux, sans prendre au sérieux d’autres enjeux comme le taux de départ en vacances et l’accessibilité financière pour les Français, les conflits d’usage entre touristes et habitants ou la qualité des emplois dans le secteur.\n\nPublié le 06 mars 2026 à 05h00     Jessica Gourdon\n\nDepuis le 9 janvier, aucun pétrolier n’est entré sur le territoire cubain, conséquence directe du blocus imposé par Washington. La pénurie de kérosène doit se poursuivre jusqu’en avril.\n\nPublié le 04 mars 2026 à 16h54   Le Monde avec AFP\n\nLe conflit déclenché par l’attaque américano-israélienne en Iran ouvre une page d’incertitude pour le tourisme international, notamment aux Emirats arabes unis, qui connaissaient depuis quelques années un boom touristique.\n\nPublié le 04 mars 2026 à 05h00, modifié le 04 mars 2026 à 17h53     Jessica Gourdon",
+  "url": "https://www.lemonde.fr/tourisme/",
+  "site_name": "lemonde.fr",
+  "word_count": 449,
+  "questions": [
+    {
+      "question": "Selon le texte, pourquoi les maires français auront-ils bientôt de nouveaux outils ?",
+      "choices": {
+        "A": "Pour identifier les propriétaires Airbnb et collecter les impôts liés à ces locations",
+        "B": "Pour interdire les locations de type Airbnb sur leur territoire",
+        "C": "Pour contrôler le nombre de touristes dans leur commune",
+        "D": "Pour obliger les propriétaires à déclarer leurs logements en mairie"
+      },
+      "answer": "A",
+      "explanation": "Le texte précise que les maires auront des outils pour 'identifier les propriétaires et les locataires, et percevoir les recettes fiscales liées à ces pratiques'."
+    },
+    {
+      "question": "Pourquoi l'Autorité de la concurrence a-t-elle sanctionné le syndicat des écoles de ski ESF ?",
+      "choices": {
+        "A": "Parce que les moniteurs travaillaient illégalement pour des concurrents",
+        "B": "Parce que des règles empêchaient les moniteurs de travailler librement pour eux-mêmes ou ailleurs",
+        "C": "Parce que les prix des cours de ski étaient trop élevés pour les touristes",
+        "D": "Parce que le syndicat refusait d'embaucher de nouveaux moniteurs indépendants"
+      },
+      "answer": "B",
+      "explanation": "Le texte indique que la sanction est due à 'des clauses qui empêchent ses moniteurs, en théorie indépendants, à travailler pour eux-mêmes ou d'autres structures'."
+    },
+    {
+      "question": "Quelles sont les deux conséquences principales de la guerre en Iran sur le transport aérien mentionnées dans le texte ?",
+      "choices": {
+        "A": "La fermeture des aéroports européens et la baisse du nombre de touristes",
+        "B": "La disparition des compagnies du Golfe et l'arrêt des vols vers l'Asie",
+        "C": "La hausse des prix des billets d'avion et la désorganisation des flux de trafic aérien",
+        "D": "La pénurie de kérosène en Europe et la faillite des compagnies aériennes"
+      },
+      "answer": "C",
+      "explanation": "Le texte mentionne explicitement 'la flambée du cours du pétrole qui va provoquer une hausse des prix des billets d'avion' et que 'la guerre en Iran désorganise la structure des flux de trafic'."
+    },
+    {
+      "question": "Quelle critique est formulée à propos de la politique touristique française dans le texte ?",
+      "choices": {
+        "A": "Elle favorise trop les touristes français au détriment des touristes étrangers",
+        "B": "Elle ne tient pas compte de l'impact environnemental du tourisme de masse",
+        "C": "Elle dépense trop d'argent pour des infrastructures inutiles",
+        "D": "Elle se concentre sur les dépenses des touristes étrangers en négligeant d'autres problèmes importants"
+      },
+      "answer": "D",
+      "explanation": "Le texte critique le fait que 'la priorité est donnée à l'accroissement des dépenses des touristes internationaux, sans prendre au sérieux d'autres enjeux' comme l'accessibilité financière ou la qualité des emplois."
+    },
+    {
+      "question": "Quelle est la situation à Cuba décrite dans le texte ?",
+      "choices": {
+        "A": "Cuba souffre d'une pénurie de kérosène à cause d'un blocus américain qui empêche l'entrée de pétroliers",
+        "B": "Cuba a interdit les vols touristiques internationaux depuis janvier pour des raisons politiques",
+        "C": "Cuba connaît un boom touristique grâce à la levée des sanctions américaines",
+        "D": "Cuba importe du pétrole depuis l'Iran pour compenser la hausse des prix mondiaux"
+      },
+      "answer": "A",
+      "explanation": "Le texte précise que 'depuis le 9 janvier, aucun pétrolier n'est entré sur le territoire cubain, conséquence directe du blocus imposé par Washington', entraînant une pénurie de kérosène."
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "terre d'élection",
+      "pos": "expression",
+      "definition_fr": "lieu privilégié, endroit particulièrement adapté ou favorable à quelque chose",
+      "translation_en": "preferred destination, natural home"
+    },
+    {
+      "word": "percevoir",
+      "pos": "verbe",
+      "definition_fr": "recevoir ou collecter une somme d'argent, notamment des taxes ou impôts",
+      "translation_en": "to collect, to receive (taxes or income)"
+    },
+    {
+      "word": "recettes fiscales",
+      "pos": "expression",
+      "definition_fr": "revenus que l'État ou les collectivités obtiennent grâce aux impôts et taxes",
+      "translation_en": "tax revenues"
+    },
+    {
+      "word": "flambée",
+      "pos": "nom",
+      "definition_fr": "augmentation soudaine et importante d'un prix ou d'un phénomène",
+      "translation_en": "surge, sudden spike"
+    },
+    {
+      "word": "déferlante",
+      "pos": "nom",
+      "definition_fr": "arrivée massive et puissante d'un phénomène, comme une vague qui déferle",
+      "translation_en": "wave, surge, flood (figurative)"
+    },
+    {
+      "word": "fragilisées",
+      "pos": "adjectif",
+      "definition_fr": "rendues moins solides, moins stables, affaiblies",
+      "translation_en": "weakened, destabilized"
+    },
+    {
+      "word": "effet repoussoir",
+      "pos": "expression",
+      "definition_fr": "quelque chose qui fait fuir ou décourage les gens, qui a un effet négatif d'attraction",
+      "translation_en": "deterrent effect, repelling effect"
+    },
+    {
+      "word": "agrivoltaïque",
+      "pos": "adjectif",
+      "definition_fr": "qui combine l'agriculture et la production d'énergie solaire sur un même terrain",
+      "translation_en": "agrivoltaic (combining farming and solar energy)"
+    },
+    {
+      "word": "conflits d'usage",
+      "pos": "expression",
+      "definition_fr": "tensions entre différents groupes qui utilisent un même espace ou une même ressource de façon incompatible",
+      "translation_en": "conflicts of use, competing uses"
+    },
+    {
+      "word": "boom touristique",
+      "pos": "expression",
+      "definition_fr": "période de croissance très rapide et importante du tourisme dans une région",
+      "translation_en": "tourism boom"
+    }
+  ],
+  "level": "B1",
+  "topic": "voyages_tourisme"
+}

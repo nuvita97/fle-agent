@@ -1,0 +1,127 @@
+{
+  "text": "Cet article traite de l'environnement biologique. Pour les autres sens du mot « environnement », voir l'article  Environnement (homonymie) .\n\nL’ environnement  est « l'ensemble des éléments ( biotiques  et  abiotiques ) qui entourent un individu ou une  espèce  et dont certains contribuent directement à subvenir à ses  besoins  » [ 1 ] , ou encore « l'ensemble des conditions naturelles ( physiques ,  chimiques ,  biologiques ) et culturelles ( sociologiques ) susceptibles d’agir sur les  organismes vivants  et les  activités humaines  » [ 2 ] .\n\nLa notion d'environnement  naturel , souvent désignée par le seul mot « environnement », a beaucoup évolué au cours des derniers siècles et tout particulièrement des dernières décennies. L'environnement est compris comme l'ensemble des composants naturels de la  planète Terre , comme l' air , l' eau , l' atmosphère , les  roches , les  végétaux , les  animaux , et l'ensemble des  phénomènes  et interactions qui s'y déploient, c'est-à-dire tout ce qui entoure l' Homme  et ses activités ; bien que cette position centrale de l'être humain soit précisément un objet de controverse dans le champ de l' écologie .\n\nAu  XXI e  siècle, la  protection de l'environnement  est devenue un enjeu majeur, en même temps que s'imposait l'idée de sa dégradation à la fois globale et locale, à cause des activités humaines  polluantes . La préservation de l'environnement est un des  trois piliers du développement durable . C'est aussi le  7 e  des huit  objectifs du millénaire pour le développement [ 3 ] , considéré par l' ONU  comme  « crucial pour la réussite des autres objectifs énoncés dans la Déclaration du Sommet du Millénaire » [ 4 ] .\n\nLe mot  environnement  est  polysémique , c'est-à-dire qu'il a plusieurs sens.\n\nQuant aux thèmes de recherche, ceux-ci sont aussi variés.",
+  "url": "https://fr.wikipedia.org/wiki/Environnement",
+  "site_name": "fr.wikipedia.org",
+  "word_count": 300,
+  "questions": [
+    {
+      "question": "Qu'est-ce que l'environnement entoure ?",
+      "choices": {
+        "A": "Un individu ou une espèce",
+        "B": "Une ville",
+        "C": "Un livre",
+        "D": "Une école"
+      },
+      "answer": "A",
+      "explanation": "Le texte dit que l'environnement est « l'ensemble des éléments qui entourent un individu ou une espèce »."
+    },
+    {
+      "question": "Est-ce que l'air fait partie de l'environnement ?",
+      "choices": {
+        "A": "Non, jamais",
+        "B": "Oui, l'air fait partie de l'environnement",
+        "C": "Seulement en hiver",
+        "D": "Non, seulement l'eau"
+      },
+      "answer": "B",
+      "explanation": "Le texte liste « l'air, l'eau, l'atmosphère, les roches » comme composants naturels de l'environnement."
+    },
+    {
+      "question": "La protection de l'environnement est importante au XXIe siècle ?",
+      "choices": {
+        "A": "Non, ce n'est pas important",
+        "B": "Seulement pour les animaux",
+        "C": "Oui, c'est un enjeu majeur",
+        "D": "Seulement en Europe"
+      },
+      "answer": "C",
+      "explanation": "Le texte dit : « Au XXIe siècle, la protection de l'environnement est devenue un enjeu majeur »."
+    },
+    {
+      "question": "Combien de piliers a le développement durable ?",
+      "choices": {
+        "A": "Un",
+        "B": "Deux",
+        "C": "Quatre",
+        "D": "Trois"
+      },
+      "answer": "D",
+      "explanation": "Le texte indique que « la préservation de l'environnement est un des trois piliers du développement durable »."
+    },
+    {
+      "question": "Qui cause la dégradation de l'environnement selon le texte ?",
+      "choices": {
+        "A": "Les activités humaines polluantes",
+        "B": "Les animaux",
+        "C": "La pluie",
+        "D": "Les plantes"
+      },
+      "answer": "A",
+      "explanation": "Le texte parle de « dégradation à cause des activités humaines polluantes »."
+    }
+  ],
+  "vocabulary": [
+    {
+      "word": "environnement",
+      "pos": "nom",
+      "definition_fr": "Tout ce qui entoure un être vivant (air, eau, nature...)",
+      "translation_en": "environment"
+    },
+    {
+      "word": "espèce",
+      "pos": "nom",
+      "definition_fr": "Groupe d'animaux ou de plantes du même type",
+      "translation_en": "species"
+    },
+    {
+      "word": "entourer",
+      "pos": "verbe",
+      "definition_fr": "Être autour de quelque chose ou quelqu'un",
+      "translation_en": "to surround"
+    },
+    {
+      "word": "air",
+      "pos": "nom",
+      "definition_fr": "Mélange de gaz que l'on respire",
+      "translation_en": "air"
+    },
+    {
+      "word": "eau",
+      "pos": "nom",
+      "definition_fr": "Liquide transparent que l'on boit et qui forme les rivières et les mers",
+      "translation_en": "water"
+    },
+    {
+      "word": "animal",
+      "pos": "nom",
+      "definition_fr": "Être vivant qui peut se déplacer (chien, chat, oiseau...)",
+      "translation_en": "animal"
+    },
+    {
+      "word": "protection",
+      "pos": "nom",
+      "definition_fr": "Action de défendre ou de garder quelque chose en sécurité",
+      "translation_en": "protection"
+    },
+    {
+      "word": "polluant",
+      "pos": "adjectif",
+      "definition_fr": "Qui salit ou abîme l'environnement",
+      "translation_en": "polluting / pollutant"
+    },
+    {
+      "word": "planète",
+      "pos": "nom",
+      "definition_fr": "Grande boule qui tourne autour du soleil (ex : la Terre)",
+      "translation_en": "planet"
+    },
+    {
+      "word": "naturel",
+      "pos": "adjectif",
+      "definition_fr": "Qui vient de la nature, pas fabriqué par l'homme",
+      "translation_en": "natural"
+    }
+  ],
+  "level": "A1",
+  "topic": "environnement_ecologie"
+}

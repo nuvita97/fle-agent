@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+{% block title %}Exercice {{ data.level }} — {{ data.topic_display }}{% endblock %}
+
+{% block content %}
+<div class="ex-header">
+  <div class="container">
+    <div class="ex-header-inner">
+      <div>
+        <span class="badge badge-level">Niveau {{ data.level }}</span>
+        <span class="badge badge-topic">{{ data.topic_display }}</span>
+      </div>
+      <div class="ex-meta">
+        <span>{{ data.word_count }} {{ t.word_count_label }}</span>
+        <span>5 {{ t.questions_count_label }}</span>
+        <span>{{ data.vocabulary | length }} {{ t.vocab_count_label }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container ex-container">
+
+  <!-- Passage -->
+  <section class="card" id="section-text">
+    <h2 class="section-title">{{ t.text_section }}</h2>
+    <div class="passage">
+      {% for para in data.text.split('\n\n') %}
+        {% if para.strip() %}<p>{{ para.strip() }}</p>{% endif %}
+      {% endfor %}
+    </div>
+    <div class="source-bar">
+      {{ t.source_label }}&nbsp;:
+      <a href="{{ data.url }}" target="_blank" rel="noopener">{{ data.site_name }}</a>
+      &mdash;
+      <a href="{{ data.url }}" target="_blank" rel="noopener" class="source-url">{{ data.url }}</a>
+    </div>
+
+    {% if data.fun_fact %}
+    <div class="fun-fact">
+      <span class="fun-fact-icon">💡</span>
+      <div>
+        <strong>{{ t.fun_fact_title }}</strong>
+        <p>{{ data.fun_fact }}</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <a href="{{ url_for('download', level=data.level, topic=data.topic) }}" class="btn btn-outline mt-3">{{ t.download_pdf }}</a>
+  </section>
+
+  <!-- MCQ Questions -->
+  <section class="card" id="section-questions">
+    <div class="questions-header">
+      <h2 class="section-title">{{ t.questions_section }}</h2>
+      <div class="timer-wrap">
+        <span class="timer-label">{{ t.time_remaining }}</span>
+        <span id="timer" class="timer">5:00</span>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+      <span class="progress-label" id="progress-label">{{ t.progress_label.replace('{answered}', '0').replace('{total}', '5') }}</span>
+    </div>
+
+    <form id="mcq-form">
+      <!-- Score history panel -->
+      <div class="history-panel" id="history-panel" style="display:none">
+        <h4>{{ t.history_title }}</h4>
+        <ul id="history-list"></ul>
+      </div>
+
+      {% for q in data.questions %}
+      <div class="question-block" id="q-block-{{ loop.index0 }}" data-answer="{{ q.answer }}">
+        <div class="question-header">
+          <span class="question-num">{{ loop.index }}.</span>
+          <p class="question-text">{{ q.question }}</p>
+        </div>
+
+        <div class="choices">
+          {% for letter in ['A', 'B', 'C', 'D'] %}
+          <label class="choice" data-letter="{{ letter }}">
+            <input type="radio" name="q{{ loop.index0 }}" value="{{ letter }}">
+            <span class="choice-letter">{{ letter }}</span>
+            <span class="choice-text">{{ q.choices[letter] }}</span>
+          </label>
+          {% endfor %}
+        </div>
+
+        <div class="explanation-msg" id="explanation-{{ loop.index0 }}" style="display:none"></div>
+      </div>
+      {% endfor %}
+
+      <div class="submit-row">
+        <button type="button" id="submit-btn" class="btn btn-primary btn-lg">
+          {{ t.submit_btn }}
+        </button>
+        <button type="button" id="restart-btn" class="btn btn-outline btn-lg" style="display:none">
+          {{ t.restart_btn }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Score banner (hidden until submit) -->
+    <div id="score-banner" class="score-banner" style="display:none">
+      <div class="score-number" id="score-number"></div>
+      <div class="score-msg" id="score-msg"></div>
+    </div>
+  </section>
+
+  <!-- Vocabulary -->
+  <section class="card" id="section-vocab">
+    <div class="vocab-toggle-row">
+      <h2 class="section-title">{{ t.vocab_section }}</h2>
+      <button type="button" id="vocab-toggle" class="btn btn-outline btn-sm">
+        {{ t.show_vocab }}
+      </button>
+    </div>
+
+    <div id="vocab-content" style="display:none">
+      <div class="vocab-grid">
+        <div class="vocab-header">
+          <span>{{ t.vocab_word_col }}</span>
+          <span>{{ t.vocab_def_col }}</span>
+        </div>
+        {% for item in data.vocabulary %}
+        <div class="vocab-row">
+          <div class="vocab-word">
+            <strong>{{ item.word }}</strong>
+            <span class="pos-badge">{{ item.pos }}</span>
+          </div>
+          <div class="vocab-def">
+            <span class="def-fr">{{ item.definition_fr }}</span>
+            <span class="def-en">{{ item.translation_en }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- Pass data to JS -->
+<script>
+  const QUESTIONS = {{ data.questions | tojson }};
+  const UI = {{ t | tojson }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script src="{{ url_for('static', filename='js/exercise.js') }}"></script>
+{% endblock %}
