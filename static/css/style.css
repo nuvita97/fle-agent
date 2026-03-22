@@ -237,6 +237,7 @@ a:hover { text-decoration: underline; }
   transition: border-color 0.15s;
 }
 .form-field input:focus { border-color: var(--accent); }
+.sub-prefs-row { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
 .sub-topic-select {
   width: 100%;
   padding: 9px 13px;

@@ -76,29 +76,29 @@
         </div>
       </div>
 
-      <!-- Level preference -->
-      <div class="field-group">
-        <label class="field-label">{{ t.sub_level_label }}</label>
-        <div class="level-buttons">
-          {% for lvl in levels %}
-          <label class="level-btn">
-            <input type="radio" name="sub_level" value="{{ lvl }}" {% if lvl == 'A1' %}checked{% endif %}>
-            <span>{{ lvl }}</span>
-          </label>
-          {% endfor %}
+      <!-- Level + Topic preference (same row) -->
+      <div class="sub-prefs-row">
+        <div class="field-group" style="flex:0 0 auto;">
+          <label class="field-label">{{ t.sub_level_label }}</label>
+          <div class="level-buttons">
+            {% for lvl in levels %}
+            <label class="level-btn">
+              <input type="radio" name="sub_level" value="{{ lvl }}" {% if lvl == 'A1' %}checked{% endif %}>
+              <span>{{ lvl }}</span>
+            </label>
+            {% endfor %}
+          </div>
         </div>
-      </div>
-
-      <!-- Topic preference -->
-      <div class="field-group">
-        <label class="field-label">{{ t.sub_topic_label }}</label>
-        <select name="sub_topic" class="sub-topic-select">
-          {% for key, display in topics.items() %}
-          <option value="{{ key }}" {% if key == 'vie_quotidienne' %}selected{% endif %}>
-            {{ topic_icons[key] }} {{ display }}
-          </option>
-          {% endfor %}
-        </select>
+        <div class="field-group" style="flex:1 1 auto;">
+          <label class="field-label">{{ t.sub_topic_label }}</label>
+          <select name="sub_topic" class="sub-topic-select">
+            {% for key, display in topics.items() %}
+            <option value="{{ key }}" {% if key == 'vie_quotidienne' %}selected{% endif %}>
+              {{ topic_icons[key] }} {{ display }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
       </div>
 
       {% if sub_error %}
