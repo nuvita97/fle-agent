@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block title %}Lumière - FLE Agent — Gérer mon abonnement{% endblock %}
+
+{% block content %}
+<div class="hero" style="padding:40px 24px 36px;">
+  <div class="hero-inner">
+    <h1>{% if unsubscribed %}Au revoir !{% else %}Mon abonnement{% endif %}</h1>
+  </div>
+</div>
+
+<div class="container" style="max-width:560px;">
+  <section class="card">
+
+    {% if unsubscribed %}
+      <!-- Unsubscribe confirmation -->
+      <div style="text-align:center;padding:16px 0;">
+        <p style="font-size:2.5rem;margin-bottom:12px;">👋</p>
+        <h2 class="section-title" style="margin-bottom:12px;">
+          {% if name %}Au revoir, {{ name }} !{% else %}Vous êtes désinscrit(e).{% endif %}
+        </h2>
+        <p style="color:var(--muted);font-size:0.95rem;margin-bottom:24px;">
+          Votre adresse a été retirée de notre liste. Vous ne recevrez plus d'exercices hebdomadaires.
+        </p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Retour à l'accueil</a>
+      </div>
+
+    {% elif error and not sub %}
+      <!-- Invalid token -->
+      <div style="text-align:center;padding:16px 0;">
+        <p style="font-size:2.5rem;margin-bottom:12px;">🔗</p>
+        <h2 class="section-title" style="margin-bottom:12px;">Lien invalide</h2>
+        <p style="color:var(--muted);font-size:0.95rem;margin-bottom:24px;">
+          Ce lien est invalide ou a expiré. Retrouvez le lien à jour dans votre dernier e-mail Lumière.
+        </p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Retour à l'accueil</a>
+      </div>
+
+    {% else %}
+      <!-- Manage preferences form -->
+      <h2 class="section-title" style="margin-bottom:4px;">Modifier mes préférences</h2>
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:24px;">
+        Bonjour {% if sub.name %}<strong>{{ sub.name }}</strong>{% endif %} ! Choisissez votre niveau et votre thème préférés.
+      </p>
+
+      {% if success %}
+      <div class="alert alert-success" style="margin-bottom:20px;">
+        ✅ Vos préférences ont été mises à jour.
+      </div>
+      {% endif %}
+
+      {% if error %}
+      <div class="alert alert-error" style="margin-bottom:20px;">{{ error }}</div>
+      {% endif %}
+
+      <form action="{{ url_for('manage') }}?token={{ token }}" method="POST">
+
+        <!-- Level -->
+        <div class="field-group">
+          <label class="field-label">Niveau CECRL</label>
+          <div class="level-buttons">
+            {% for lvl in levels %}
+            <label class="level-btn">
+              <input type="radio" name="level" value="{{ lvl }}"
+                     {% if lvl == sub.level %}checked{% endif %}>
+              <span>{{ lvl }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Topic -->
+        <div class="field-group">
+          <label class="field-label">Thème préféré</label>
+          <select name="topic" class="sub-topic-select">
+            {% for key, display in topics.items() %}
+            <option value="{{ key }}" {% if key == sub.topic %}selected{% endif %}>
+              {{ display }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+          <a href="{{ url_for('unsubscribe') }}?token={{ token }}"
+             style="font-size:0.85rem;color:var(--muted);"
+             onclick="return confirm('Êtes-vous sûr(e) de vouloir vous désabonner ?')">
+            Se désabonner
+          </a>
+        </div>
+
+      </form>
+    {% endif %}
+
+  </section>
+</div>
+{% endblock %}

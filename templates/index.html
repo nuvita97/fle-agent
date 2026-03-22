@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
-{% block title %}FLE-agent — Exercices de Français{% endblock %}
+{% block title %}Lumière - FLE Agent{% endblock %}
 
 {% block content %}
 <div class="hero">
   <div class="hero-inner">
     <h1>{{ t.hero_title }}</h1>
-    <p class="hero-sub">{{ t.hero_sub }}</p>
+    <p class="hero-sub">{{ t.hero_sub | safe }}</p>
   </div>
 </div>
 
@@ -23,7 +23,7 @@
         <div class="level-buttons">
           {% for lvl in levels %}
           <label class="level-btn">
-            <input type="radio" name="level" value="{{ lvl }}" {% if lvl == 'B1' %}checked{% endif %}>
+            <input type="radio" name="level" value="{{ lvl }}" {% if lvl == 'A1' %}checked{% endif %}>
             <span>{{ lvl }}</span>
           </label>
           {% endfor %}
@@ -36,7 +36,7 @@
         <div class="topic-grid">
           {% for key, display in topics.items() %}
           <label class="topic-card">
-            <input type="radio" name="topic" value="{{ key }}" {% if key == 'voyages_tourisme' %}checked{% endif %}>
+            <input type="radio" name="topic" value="{{ key }}" {% if key == 'vie_quotidienne' %}checked{% endif %}>
             <span class="topic-icon">{{ topic_icons[key] }}</span>
             <span class="topic-name">{{ display }}</span>
           </label>
@@ -76,6 +76,31 @@
         </div>
       </div>
 
+      <!-- Level + Topic preference (same row) -->
+      <div class="sub-prefs-row">
+        <div class="field-group" style="flex:0 0 auto;">
+          <label class="field-label">{{ t.sub_level_label }}</label>
+          <div class="level-buttons">
+            {% for lvl in levels %}
+            <label class="level-btn">
+              <input type="radio" name="sub_level" value="{{ lvl }}" {% if lvl == 'A1' %}checked{% endif %}>
+              <span>{{ lvl }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="field-group" style="flex:1 1 auto;">
+          <label class="field-label">{{ t.sub_topic_label }}</label>
+          <select name="sub_topic" class="sub-topic-select">
+            {% for key, display in topics.items() %}
+            <option value="{{ key }}" {% if key == 'vie_quotidienne' %}selected{% endif %}>
+              {{ topic_icons[key] }} {{ display }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
       {% if sub_error %}
       <div class="alert alert-error">{{ sub_error }}</div>
       {% endif %}
@@ -83,7 +108,9 @@
       <div class="alert alert-success">{{ sub_success }}</div>
       {% endif %}
 
-      <button type="submit" class="btn btn-accent">{{ t.subscribe_btn }}</button>
+      <div style="text-align:center;">
+        <button type="submit" class="btn btn-accent btn-lg">{{ t.subscribe_btn }}</button>
+      </div>
     </form>
   </section>
 
