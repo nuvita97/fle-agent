@@ -11,6 +11,7 @@ Routes:
   POST /manage      Save updated preferences to Supabase
   GET  /unsubscribe Remove subscriber from Supabase
   POST /admin/trigger-newsletter  Manually trigger the weekly newsletter
+  POST /admin/trigger-generate    Manually trigger the weekly exercise generation
 """
 
 import io
@@ -89,6 +90,7 @@ TRANSLATIONS = {
         "msg_ok": "Pas mal ! Révisez le texte et réessayez. 📖",
         "msg_low": "Courage ! Lisez le texte attentivement et réessayez. 🔁",
         "progress_label": "{answered} / {total} répondu(es)",
+        "open_question_section": "✍️ Question ouverte",
     },
     "en": {
         "nav_home": "Home",
@@ -134,6 +136,7 @@ TRANSLATIONS = {
         "msg_ok": "Not bad! Review the text and try again. 📖",
         "msg_low": "Keep going! Read the text carefully and try again. 🔁",
         "progress_label": "{answered} / {total} answered",
+        "open_question_section": "✍️ Open question",
     },
 }
 
@@ -180,7 +183,11 @@ VALID_TOPICS = list(TOPIC_DISPLAY.keys())
 # ---------------------------------------------------------------------------
 
 def load_cached_exercise(level: str, topic: str) -> dict | None:
-    """Load exercise for a specific level+topic from Supabase."""
+    """Load a random exercise for a specific level+topic from Supabase.
+
+    Returns a randomly chosen row so users see different content on each visit
+    as the exercise pool grows week over week.
+    """
     try:
         sb = _get_supabase()
         rows = (
@@ -188,6 +195,27 @@ def load_cached_exercise(level: str, topic: str) -> dict | None:
             .select("*")
             .eq("level", level)
             .eq("topic", topic)
+            .execute()
+            .data
+        )
+        return random.choice(rows) if rows else None
+    except Exception:
+        return None
+
+
+def load_latest_exercise(level: str, topic: str) -> dict | None:
+    """Load the most recently generated exercise for a specific level+topic.
+
+    Used by the newsletter to always send the freshest content from this week's batch.
+    """
+    try:
+        sb = _get_supabase()
+        rows = (
+            sb.table("exercises")
+            .select("*")
+            .eq("level", level)
+            .eq("topic", topic)
+            .order("created_at", desc=True)
             .limit(1)
             .execute()
             .data
@@ -198,11 +226,14 @@ def load_cached_exercise(level: str, topic: str) -> dict | None:
 
 
 def find_best_cached_exercise(level: str, topic: str) -> tuple:
-    """Return exercise for exact level+topic, or fall back to same topic any level."""
-    data = load_cached_exercise(level, topic)
+    """Return the latest exercise for exact level+topic, or fall back to same topic any level.
+
+    Used by the newsletter — always picks the most recently generated content.
+    """
+    data = load_latest_exercise(level, topic)
     if data:
         return data, level, topic
-    # Fallback: same topic, any level
+    # Fallback: same topic, any level (also pick latest)
     try:
         sb = _get_supabase()
         for lvl in VALID_LEVELS:
@@ -211,14 +242,22 @@ def find_best_cached_exercise(level: str, topic: str) -> tuple:
                 .select("*")
                 .eq("level", lvl)
                 .eq("topic", topic)
+                .order("created_at", desc=True)
                 .limit(1)
                 .execute()
                 .data
             )
             if rows:
                 return rows[0], lvl, topic
-        # Last resort: any exercise
-        rows = sb.table("exercises").select("*").limit(1).execute().data
+        # Last resort: any exercise (latest overall)
+        rows = (
+            sb.table("exercises")
+            .select("*")
+            .order("created_at", desc=True)
+            .limit(1)
+            .execute()
+            .data
+        )
         if rows:
             r = rows[0]
             return r, r["level"], r["topic"]
@@ -254,7 +293,25 @@ def _subscriber_urls(token: str) -> tuple[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Newsletter job
+# Weekly generation job (Monday 6am)
+# ---------------------------------------------------------------------------
+
+def generate_weekly_exercises() -> None:
+    """Run tools/weekly_generate.py to generate all 35 exercises and insert into Supabase."""
+    python = sys.executable
+    result = subprocess.run(
+        [python, "tools/weekly_generate.py"],
+        capture_output=True, text=True,
+    )
+    if result.returncode == 0:
+        app.logger.info(f"Weekly generation succeeded:\n{result.stdout}")
+    else:
+        app.logger.error(f"Weekly generation FAILED (exit {result.returncode}):\n"
+                         f"{result.stdout}\n{result.stderr}")
+
+
+# ---------------------------------------------------------------------------
+# Newsletter job (Monday 12pm)
 # ---------------------------------------------------------------------------
 
 def send_newsletter_to_all() -> dict:
@@ -288,7 +345,7 @@ def send_newsletter_to_all() -> dict:
         try:
             pdf_bytes = build_pdf_bytes(
                 level=actual_level, topic=actual_topic,
-                text=data["text"], url=data["url"], site_name=data["site_name"],
+                text=data["text"], url=data.get("url", ""), site_name=data.get("site_name", ""),
                 exercises={"questions": data.get("questions", []), "vocabulary": data.get("vocabulary", [])},
                 open_question=data.get("open_question", ""),
             )
@@ -336,10 +393,12 @@ def _start_scheduler():
     try:
         from apscheduler.schedulers.background import BackgroundScheduler  # noqa: PLC0415
         scheduler = BackgroundScheduler(timezone="Europe/Paris")
+        scheduler.add_job(generate_weekly_exercises, "cron", day_of_week="mon", hour=6, minute=0,
+                          id="weekly_generate", replace_existing=True)
         scheduler.add_job(send_newsletter_to_all, "cron", day_of_week="mon", hour=12, minute=0,
                           id="weekly_newsletter", replace_existing=True)
         scheduler.start()
-        app.logger.info("APScheduler started — newsletter every Monday 12:00 Europe/Paris.")
+        app.logger.info("APScheduler started — generation Monday 06:00, newsletter Monday 12:00 Europe/Paris.")
     except ImportError:
         app.logger.warning("APScheduler not installed — weekly schedule disabled. Run: pip install APScheduler")
     except Exception as e:
@@ -444,7 +503,7 @@ def download():
     try:
         pdf_bytes = build_pdf_bytes(
             level=level, topic=topic,
-            text=data["text"], url=data["url"], site_name=data["site_name"],
+            text=data["text"], url=data.get("url", ""), site_name=data.get("site_name", ""),
             exercises=exercises,
             open_question=data.get("open_question", ""),
         )
@@ -604,6 +663,20 @@ def admin_trigger_newsletter():
 
     results = send_newsletter_to_all()
     return jsonify(results)
+
+
+@app.route("/admin/trigger-generate", methods=["POST"])
+def admin_trigger_generate():
+    """Manually trigger the weekly exercise generation (runs tools/weekly_generate.py)."""
+    admin_token = os.getenv("ADMIN_TOKEN", "")
+    provided = request.headers.get("X-Admin-Token", "")
+    if not admin_token or provided != admin_token:
+        return jsonify({"error": "unauthorized"}), 401
+
+    import threading
+    thread = threading.Thread(target=generate_weekly_exercises, daemon=True)
+    thread.start()
+    return jsonify({"status": "started", "message": "Weekly generation running in background. Check server logs."})
 
 
 if __name__ == "__main__":

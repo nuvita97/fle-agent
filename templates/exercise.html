@@ -134,6 +134,14 @@
     </div>
   </section>
 
+  <!-- Open Question -->
+  {% if data.open_question %}
+  <section class="card" id="section-open-question">
+    <h2 class="section-title">{{ t.open_question_section }}</h2>
+    <p class="open-question-text">{{ data.open_question }}</p>
+  </section>
+  {% endif %}
+
   <!-- Download -->
   <div class="download-row">
     <a href="{{ url_for('download', level=data.level, topic=data.topic) }}" class="btn btn-outline btn-lg">{{ t.download_pdf }}</a>
