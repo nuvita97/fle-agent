@@ -40,13 +40,13 @@ TOPICS = [
 TOTAL = len(LEVELS) * len(TOPICS)   # 35
 
 TOPIC_DISPLAY = {
-    "vie_quotidienne":          "Vie quotidienne & Société",
-    "sante_bien_etre":          "Santé & Bien-être",
-    "education_apprentissage":  "Éducation & Apprentissage",
-    "voyages_tourisme":         "Voyages & Mobilité",
-    "environnement_ecologie":   "Environnement & Développement durable",
-    "technologie_numerique":    "Technologies & Monde numérique",
-    "culture_histoire":         "Culture, Arts & Histoire",
+    "vie_quotidienne":        "Vie quotidienne & Société",
+    "sante_bien_etre":        "Santé & Bien-être",
+    "education_apprentissage": "Éducation & Apprentissage",
+    "voyages_tourisme":       "Voyages & Mobilité",
+    "environnement_ecologie": "Environnement & Écologie",
+    "technologie_numerique":  "Technologies & Numérique",
+    "culture_histoire":       "Culture, Arts & Histoire",
 }
 
 
@@ -102,43 +102,23 @@ def run(cmd: list[str]) -> tuple[int, str]:
 
 def build_one(level: str, topic: str, python: str) -> dict | str:
     """
-    Run search then generate for one combination.
+    Run generate_lesson for one combination.
     Returns the merged dict on success, or an error string on failure.
     """
-    # Step 1 — search
-    code, out = run([python, "tools/search_french_text.py", "--level", level, "--topic", topic])
+    code, out = run([python, "tools/generate_lesson.py", "--level", level, "--topic", topic])
     if code != 0:
         try:
             err = json.loads(out).get("message", out)
         except Exception:
-            err = out or "unknown search error"
-        return f"search failed: {err}"
+            err = out or "unknown error"
+        return f"generate_lesson failed: {err}"
 
     try:
-        search = json.loads(out)
+        result = json.loads(out)
     except json.JSONDecodeError:
-        return f"search returned invalid JSON: {out[:120]}"
+        return f"generate_lesson returned invalid JSON: {out[:120]}"
 
-    # Step 2 — generate exercises
-    code, out = run([
-        python, "tools/generate_exercises.py",
-        "--level", level,
-        "--topic", topic,
-        "--text", search["text"],
-    ])
-    if code != 0:
-        try:
-            err = json.loads(out).get("message", out)
-        except Exception:
-            err = out or "unknown generate error"
-        return f"generate failed: {err}"
-
-    try:
-        exercises = json.loads(out)
-    except json.JSONDecodeError:
-        return f"generate returned invalid JSON: {out[:120]}"
-
-    return {**search, **exercises, "level": level, "topic": topic}
+    return {**result, "level": level, "topic": topic}
 
 
 # ---------------------------------------------------------------------------

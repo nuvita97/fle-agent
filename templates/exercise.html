@@ -28,13 +28,6 @@
         {% if para.strip() %}<p>{{ para.strip() }}</p>{% endif %}
       {% endfor %}
     </div>
-    <div class="source-bar">
-      {{ t.source_label }}&nbsp;:
-      <a href="{{ data.url }}" target="_blank" rel="noopener">{{ data.site_name }}</a>
-      &mdash;
-      <a href="{{ data.url }}" target="_blank" rel="noopener" class="source-url">{{ data.url }}</a>
-    </div>
-
     {% if data.fun_fact %}
     <div class="fun-fact">
       <span class="fun-fact-icon">💡</span>

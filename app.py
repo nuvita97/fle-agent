@@ -228,28 +228,18 @@ def find_best_cached_exercise(level: str, topic: str) -> tuple:
 
 
 def run_tools(level: str, topic: str) -> dict | None:
-    """Call search + generate tools as subprocesses. Used in production mode."""
+    """Call generate_lesson tool as subprocess. Used in production mode (non-demo, cache miss)."""
     python = sys.executable
-
-    # Step 1: search
     result = subprocess.run(
-        [python, "tools/search_french_text.py", "--level", level, "--topic", topic],
+        [python, "tools/generate_lesson.py", "--level", level, "--topic", topic],
         capture_output=True, text=True,
     )
     if result.returncode != 0:
         return None
-    search = json.loads(result.stdout)
-
-    # Step 2: generate exercises
-    result = subprocess.run(
-        [python, "tools/generate_exercises.py", "--level", level, "--topic", topic, "--text", search["text"]],
-        capture_output=True, text=True,
-    )
-    if result.returncode != 0:
+    try:
+        return json.loads(result.stdout)
+    except json.JSONDecodeError:
         return None
-    exercises = json.loads(result.stdout)
-
-    return {**search, **exercises}
 
 
 def _get_supabase():
@@ -300,6 +290,7 @@ def send_newsletter_to_all() -> dict:
                 level=actual_level, topic=actual_topic,
                 text=data["text"], url=data["url"], site_name=data["site_name"],
                 exercises={"questions": data.get("questions", []), "vocabulary": data.get("vocabulary", [])},
+                open_question=data.get("open_question", ""),
             )
         except Exception as e:
             app.logger.error(f"Newsletter: PDF error for {email}: {e}")
@@ -317,8 +308,8 @@ def send_newsletter_to_all() -> dict:
             pdf_path=tmp_path,
             level=actual_level,
             topic=actual_topic,
-            source_url=data.get("url", ""),
-            source_name=data.get("site_name", ""),
+            source_url="",
+            source_name="",
             recipient=email,
             manage_url=manage_url,
             unsubscribe_url=unsubscribe_url,
@@ -455,6 +446,7 @@ def download():
             level=level, topic=topic,
             text=data["text"], url=data["url"], site_name=data["site_name"],
             exercises=exercises,
+            open_question=data.get("open_question", ""),
         )
     except Exception as e:
         app.logger.error(f"PDF error: {e}")

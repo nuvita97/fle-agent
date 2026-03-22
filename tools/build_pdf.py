@@ -38,13 +38,13 @@ COLOR_DIVIDER = (222, 222, 222)     # Light grey — dividers
 COLOR_FOOTER = (150, 150, 150)      # Grey — footer
 
 TOPIC_DISPLAY = {
-    "vie_quotidienne":          "Vie quotidienne & Societe",
-    "sante_bien_etre":          "Sante & Bien-etre",
-    "education_apprentissage":  "Education & Apprentissage",
-    "voyages_tourisme":         "Voyages & Mobilite",
-    "environnement_ecologie":   "Environnement & Developpement durable",
-    "technologie_numerique":    "Technologies & Monde numerique",
-    "culture_histoire":         "Culture, Arts & Histoire",
+    "vie_quotidienne":        "Vie quotidienne & Société",
+    "sante_bien_etre":        "Santé & Bien-être",
+    "education_apprentissage": "Éducation & Apprentissage",
+    "voyages_tourisme":       "Voyages & Mobilité",
+    "environnement_ecologie": "Environnement & Écologie",
+    "technologie_numerique":  "Technologies & Numérique",
+    "culture_histoire":       "Culture, Arts & Histoire",
 }
 
 # DejaVu TTF fonts bundled in fonts/ (cross-platform)
@@ -74,29 +74,29 @@ class FrenchExercisePDF(FPDF):
         self.set_font("DejaVu", "I", 8)
         self.set_text_color(*COLOR_FOOTER)
         date_str = datetime.now().strftime("%d %B %Y")
-        self.cell(0, 8, f"Genere le {date_str}  -  FLE-agent  |  p. {self.page_no()}", align="C")
+        self.cell(0, 8, f"Évoli  -  Genere le {date_str}  |  p. {self.page_no()}", align="C")
 
     def draw_title_bar(self):
         """Big header bar at top of first page."""
         self.set_fill_color(*COLOR_ACCENT)
-        self.rect(0, 0, 210, 28, "F")
-        self.set_y(6)
-        self.set_font("DejaVu", "B", 16)
+        self.rect(0, 0, 210, 30, "F")
+        self.set_y(5)
+        self.set_font("DejaVu", "B", 17)
         self.set_text_color(*COLOR_HEADER_TEXT)
         self.cell(
-            0, 8,
-            f"Exercice de Francais  -  Niveau {self.level}",
+            0, 9,
+            "Évoli : Exercice de Français",
             align="C",
             new_x=XPos.LMARGIN, new_y=YPos.NEXT,
         )
         self.set_font("DejaVu", "", 11)
         self.cell(
             0, 7,
-            f"Theme : {self.topic_display}",
+            f"Niveau : {self.level}  |  Thème : {self.topic_display}",
             align="C",
             new_x=XPos.LMARGIN, new_y=YPos.NEXT,
         )
-        self.set_y(32)
+        self.set_y(36)
         self.ln(2)
 
     def draw_section_header(self, title: str):
@@ -188,6 +188,28 @@ class FrenchExercisePDF(FPDF):
 
         self.set_text_color(*COLOR_BODY)
 
+    def write_open_question(self, question: str):
+        """Render the open-ended reflection question with a writing space."""
+        self.ln(4)
+        self.set_fill_color(*COLOR_SOURCE_BG)
+        self.set_text_color(*COLOR_SOURCE_TEXT)
+        self.set_font("DejaVu", "B", 9)
+        self.cell(0, 7, "  Pour aller plus loin...", fill=True,
+                  new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.ln(3)
+        self.set_font("DejaVu", "I", 11)
+        self.set_text_color(*COLOR_BODY)
+        self.multi_cell(0, 6, question, align="L")
+        # Writing lines for the student
+        self.ln(5)
+        self.set_draw_color(*COLOR_DIVIDER)
+        x = self.get_x()
+        for _ in range(4):
+            y = self.get_y()
+            self.line(x, y, 195, y)
+            self.ln(7)
+        self.set_text_color(*COLOR_BODY)
+
     def write_vocabulary(self, vocabulary: list):
         """2-column grid with teal cell backgrounds."""
         col_w = (self.w - 30) / 2
@@ -258,26 +280,29 @@ def build_pdf(
     level: str,
     topic: str,
     text: str,
-    url: str,
-    site_name: str,
     exercises: dict,
     output_path: str,
+    open_question: str = "",
+    # Legacy params kept for backwards-compatibility — no longer used
+    url: str = "",
+    site_name: str = "",
 ) -> str:
     os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else ".", exist_ok=True)
 
     pdf = FrenchExercisePDF(level, topic)
     pdf.add_page()
 
-    # Page 1 — Paragraph
+    # Page 1 — Passage
     pdf.draw_title_bar()
     pdf.draw_section_header("TEXTE")
     pdf.write_passage(text)
-    pdf.draw_source_bar(site_name, url)
 
-    # Page 2 — Questions (MCQ, no answers)
+    # Page 2 — Questions (MCQ) + open question
     pdf.add_page()
     pdf.draw_section_header("QUESTIONS DE COMPREHENSION")
     pdf.write_questions(exercises.get("questions", []))
+    if open_question:
+        pdf.write_open_question(open_question)
 
     # Page 3 — Vocabulary
     pdf.add_page()
@@ -297,9 +322,11 @@ def build_pdf_bytes(
     level: str,
     topic: str,
     text: str,
-    url: str,
-    site_name: str,
     exercises: dict,
+    open_question: str = "",
+    # Legacy params kept for backwards-compatibility — no longer used
+    url: str = "",
+    site_name: str = "",
 ) -> bytes:
     """Build PDF and return raw bytes (no filesystem write). Used for in-memory streaming."""
     pdf = FrenchExercisePDF(level, topic)
@@ -308,11 +335,12 @@ def build_pdf_bytes(
     pdf.draw_title_bar()
     pdf.draw_section_header("TEXTE")
     pdf.write_passage(text)
-    pdf.draw_source_bar(site_name, url)
 
     pdf.add_page()
     pdf.draw_section_header("QUESTIONS DE COMPREHENSION")
     pdf.write_questions(exercises.get("questions", []))
+    if open_question:
+        pdf.write_open_question(open_question)
 
     pdf.add_page()
     pdf.draw_section_header("VOCABULAIRE")
@@ -332,7 +360,8 @@ def main():
     parser.add_argument("--text", required=True)
     parser.add_argument("--url", required=True)
     parser.add_argument("--site_name", required=True)
-    parser.add_argument("--exercises", required=True, help="JSON string from generate_exercises.py")
+    parser.add_argument("--exercises", required=True, help="JSON string from generate_lesson.py")
+    parser.add_argument("--open_question", default="", help="Open-ended reflection question")
     parser.add_argument("--output", default="")
     args = parser.parse_args()
 
@@ -357,6 +386,7 @@ def main():
             site_name=args.site_name,
             exercises=exercises,
             output_path=output_path,
+            open_question=args.open_question,
         )
         print(saved_path)
     except Exception as e:

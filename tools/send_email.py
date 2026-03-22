@@ -37,6 +37,7 @@ import base64
 import json
 import os
 import sys
+from datetime import datetime
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -51,27 +52,31 @@ from googleapiclient.errors import HttpError
 load_dotenv()
 
 TOPIC_DISPLAY = {
-    "vie_quotidienne":          "Vie quotidienne & Societe",
-    "sante_bien_etre":          "Sante & Bien-etre",
-    "education_apprentissage":  "Education & Apprentissage",
-    "voyages_tourisme":         "Voyages & Mobilite",
-    "environnement_ecologie":   "Environnement & Developpement durable",
-    "technologie_numerique":    "Technologies & Monde numerique",
-    "culture_histoire":         "Culture, Arts & Histoire",
+    "vie_quotidienne":        "Vie quotidienne & Société",
+    "sante_bien_etre":        "Santé & Bien-être",
+    "education_apprentissage": "Éducation & Apprentissage",
+    "voyages_tourisme":       "Voyages & Mobilité",
+    "environnement_ecologie": "Environnement & Écologie",
+    "technologie_numerique":  "Technologies & Numérique",
+    "culture_histoire":       "Culture, Arts & Histoire",
 }
 
 
 def build_html_body(
     level: str,
     topic: str,
-    source_url: str,
-    source_name: str,
+    source_url: str = "",
+    source_name: str = "",
     manage_url: str = "",
     unsubscribe_url: str = "",
     recipient_name: str = "",
 ) -> str:
     topic_display = TOPIC_DISPLAY.get(topic, topic.replace("_", " ").title())
-    greeting = f"Bonjour {recipient_name}," if recipient_name else "Bonjour,"
+    greeting = f"Bonjour {recipient_name}\u00a0!" if recipient_name else "Bonjour\u00a0!"
+    MONTHS_FR = ["janvier","février","mars","avril","mai","juin",
+                 "juillet","août","septembre","octobre","novembre","décembre"]
+    now = datetime.now()
+    date_str = f"{now.day} {MONTHS_FR[now.month - 1]} {now.year}"
 
     manage_section = ""
     if manage_url or unsubscribe_url:
@@ -141,6 +146,9 @@ def build_html_body(
           <!-- Body -->
           <tr>
             <td style="padding:28px 32px;">
+              <p style="margin:0 0 4px;color:#888888;font-size:12px;">
+                {date_str}
+              </p>
               <p style="margin:0 0 16px;color:#1a1a1a;font-size:15px;line-height:1.7;">
                 {greeting}
               </p>
@@ -168,19 +176,6 @@ def build_html_body(
                   </td>
                 </tr>
               </table>
-
-              <!-- Source -->
-              <p style="margin:20px 0 6px;color:#555555;font-size:13px;">
-                <strong>Source du texte&nbsp;:</strong>
-                <a href="{source_url}" style="color:#4a6fa5;text-decoration:none;">
-                  {source_name}
-                </a>
-                &mdash;
-                <a href="{source_url}" style="color:#888888;font-size:12px;text-decoration:none;
-                                              word-break:break-all;">
-                  {source_url}
-                </a>
-              </p>
 
               <p style="margin:24px 0 0;color:#1a1a1a;font-size:15px;line-height:1.7;">
                 Bonne &eacute;tude&nbsp;! &#127891;
@@ -450,6 +445,7 @@ def main():
     parser.add_argument("--source-url", required=True, dest="source_url", help="Source article URL")
     parser.add_argument("--source-name", required=True, dest="source_name", help="Source site name")
     parser.add_argument("--recipient", default="", help="Override recipient email")
+    parser.add_argument("--recipient-name", default="", dest="recipient_name", help="Recipient first name")
     parser.add_argument("--manage-url", default="", dest="manage_url", help="Manage preferences URL")
     parser.add_argument("--unsubscribe-url", default="", dest="unsubscribe_url", help="Unsubscribe URL")
     args = parser.parse_args()
@@ -461,6 +457,7 @@ def main():
         source_url=args.source_url,
         source_name=args.source_name,
         recipient=args.recipient,
+        recipient_name=args.recipient_name,
         manage_url=args.manage_url,
         unsubscribe_url=args.unsubscribe_url,
     )
