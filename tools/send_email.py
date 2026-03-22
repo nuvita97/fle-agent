@@ -102,7 +102,7 @@ def build_html_body(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exercice de Fran&ccedil;ais — Lumi&egrave;re FLE Agent</title>
+  <title>Exercice de Fran&ccedil;ais — &Eacute;voli FLE Agent</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f6f9;font-family:Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f9;padding:30px 0;">
@@ -116,7 +116,7 @@ def build_html_body(
           <tr>
             <td style="background-color:#4a6fa5;padding:28px 32px;text-align:center;">
               <p style="margin:0 0 4px;color:rgba(255,255,255,0.75);font-size:12px;letter-spacing:1px;text-transform:uppercase;">
-                Lumi&egrave;re &mdash; FLE Agent
+                &Eacute;voli &mdash; FLE Agent
               </p>
               <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:0.5px;">
                 Exercice de Fran&ccedil;ais
@@ -193,7 +193,7 @@ def build_html_body(
             <td style="background-color:#f4f6f9;padding:16px 32px;text-align:center;
                        border-top:1px solid #e0e6ef;">
               <p style="margin:0;color:#999999;font-size:12px;">
-                G&eacute;n&eacute;r&eacute; par <strong>Lumi&egrave;re - FLE Agent</strong>
+                G&eacute;n&eacute;r&eacute; par <strong>&Eacute;voli - FLE Agent</strong>
               </p>
             </td>
           </tr>
@@ -219,7 +219,7 @@ def build_welcome_html(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bienvenue sur Lumi&egrave;re - FLE Agent</title>
+  <title>Bienvenue sur &Eacute;voli - FLE Agent</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f4f6f9;font-family:Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f9;padding:30px 0;">
@@ -233,7 +233,7 @@ def build_welcome_html(
           <tr>
             <td style="background-color:#4a6fa5;padding:28px 32px;text-align:center;">
               <p style="margin:0 0 4px;color:rgba(255,255,255,0.75);font-size:12px;letter-spacing:1px;text-transform:uppercase;">
-                Lumi&egrave;re - FLE Agent
+                &Eacute;voli - FLE Agent
               </p>
               <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:bold;">
                 Bienvenue, {name}&nbsp;! &#127881;
@@ -246,7 +246,7 @@ def build_welcome_html(
             <td style="padding:28px 32px;">
               <p style="margin:0 0 16px;color:#1a1a1a;font-size:15px;line-height:1.7;">
                 Vous &ecirc;tes maintenant inscrit(e) &agrave; la newsletter hebdomadaire
-                <strong>Lumi&egrave;re - FLE Agent</strong>.
+                <strong>&Eacute;voli - FLE Agent</strong>.
               </p>
 
               <!-- Preferences summary -->
@@ -297,7 +297,7 @@ def build_welcome_html(
           <tr>
             <td style="background-color:#f4f6f9;padding:12px 32px;text-align:center;">
               <p style="margin:0;color:#999999;font-size:12px;">
-                G&eacute;n&eacute;r&eacute; par <strong>Lumi&egrave;re - FLE Agent</strong>
+                G&eacute;n&eacute;r&eacute; par <strong>&Eacute;voli - FLE Agent</strong>
               </p>
             </td>
           </tr>
@@ -435,7 +435,7 @@ def send_welcome(
 
     html_body = build_welcome_html(name, level, topic, manage_url, unsubscribe_url)
 
-    err = _gmail_send(config, recipient, "Bienvenue sur Lumière - FLE Agent 🎉", html_body)
+    err = _gmail_send(config, recipient, "Bienvenue sur Évoli - FLE Agent 🎉", html_body)
     if err:
         return err
 
