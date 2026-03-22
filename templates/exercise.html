@@ -45,7 +45,6 @@
     </div>
     {% endif %}
 
-    <a href="{{ url_for('download', level=data.level, topic=data.topic) }}" class="btn btn-outline mt-3">{{ t.download_pdf }}</a>
   </section>
 
   <!-- MCQ Questions -->
@@ -141,6 +140,11 @@
       </div>
     </div>
   </section>
+
+  <!-- Download -->
+  <div class="download-row">
+    <a href="{{ url_for('download', level=data.level, topic=data.topic) }}" class="btn btn-outline btn-lg">{{ t.download_pdf }}</a>
+  </div>
 
 </div>
 

@@ -28,11 +28,13 @@ from ddgs import DDGS
 # ---------------------------------------------------------------------------
 
 TOPIC_LABELS = {
-    "vie_quotidienne": "vie quotidienne routines",
-    "voyages_tourisme": "voyages tourisme destinations",
-    "environnement_ecologie": "environnement écologie nature",
-    "technologie_numerique": "technologie numérique internet",
-    "culture_histoire": "culture histoire France patrimoine",
+    "vie_quotidienne":          "vie quotidienne société routines",
+    "sante_bien_etre":          "santé bien-être médecine alimentation",
+    "education_apprentissage":  "éducation école apprentissage formation",
+    "voyages_tourisme":         "voyages tourisme mobilité destinations",
+    "environnement_ecologie":   "environnement écologie développement durable nature",
+    "technologie_numerique":    "technologie numérique internet intelligence artificielle",
+    "culture_histoire":         "culture arts histoire France patrimoine",
 }
 
 LEVEL_MODIFIERS = {

@@ -38,11 +38,13 @@ COLOR_DIVIDER = (222, 222, 222)     # Light grey — dividers
 COLOR_FOOTER = (150, 150, 150)      # Grey — footer
 
 TOPIC_DISPLAY = {
-    "vie_quotidienne": "Vie Quotidienne",
-    "voyages_tourisme": "Voyages & Tourisme",
-    "environnement_ecologie": "Environnement & Ecologie",
-    "technologie_numerique": "Technologie & Numerique",
-    "culture_histoire": "Culture & Histoire",
+    "vie_quotidienne":          "Vie quotidienne & Societe",
+    "sante_bien_etre":          "Sante & Bien-etre",
+    "education_apprentissage":  "Education & Apprentissage",
+    "voyages_tourisme":         "Voyages & Mobilite",
+    "environnement_ecologie":   "Environnement & Developpement durable",
+    "technologie_numerique":    "Technologies & Monde numerique",
+    "culture_histoire":         "Culture, Arts & Histoire",
 }
 
 # DejaVu TTF fonts bundled in fonts/ (cross-platform)
