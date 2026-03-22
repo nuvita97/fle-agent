@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
-Send a French exercise PDF by email via Gmail SMTP.
+Send a French exercise PDF by email via the Gmail API (OAuth2).
+
+Uses a stored refresh token — no browser interaction at runtime.
+Run tools/get_gmail_token.py once locally to obtain the refresh token.
 
 Usage:
     python tools/send_email.py \
@@ -14,13 +17,13 @@ Usage:
         --unsubscribe-url "https://yourapp.com/unsubscribe?token=xxx"
 
 Required .env keys:
-    EMAIL_SENDER        your Gmail address
-    EMAIL_APP_PASSWORD  Gmail App Password (16-char, from Google Account > Security)
+    GMAIL_CLIENT_ID       OAuth2 client ID (from Google Cloud Console)
+    GMAIL_CLIENT_SECRET   OAuth2 client secret
+    GMAIL_REFRESH_TOKEN   Refresh token (run tools/get_gmail_token.py to obtain)
+    EMAIL_SENDER          Your Gmail address (must match the Google account used for OAuth)
 
 Optional .env keys:
-    EMAIL_RECIPIENT     fallback recipient (overridden by --recipient flag)
-    EMAIL_SMTP_HOST     default: smtp.gmail.com
-    EMAIL_SMTP_PORT     default: 587
+    EMAIL_RECIPIENT       fallback recipient (overridden by --recipient flag)
 
 Output (stdout JSON):
     {"status": "sent", "recipient": "...", "pdf": "..."}
@@ -30,9 +33,9 @@ On failure, exits with code 1 and prints:
 """
 
 import argparse
+import base64
 import json
 import os
-import smtplib
 import sys
 from email import encoders
 from email.mime.base import MIMEBase
@@ -40,6 +43,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from dotenv import load_dotenv
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 load_dotenv()
 
@@ -226,7 +233,7 @@ def build_welcome_html(
           <tr>
             <td style="background-color:#4a6fa5;padding:28px 32px;text-align:center;">
               <p style="margin:0 0 4px;color:rgba(255,255,255,0.75);font-size:12px;letter-spacing:1px;text-transform:uppercase;">
-                Lumi&egrave;re &mdash; FLE Agent
+                Lumi&egrave;re - FLE Agent
               </p>
               <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:bold;">
                 Bienvenue, {name}&nbsp;! &#127881;
@@ -239,7 +246,7 @@ def build_welcome_html(
             <td style="padding:28px 32px;">
               <p style="margin:0 0 16px;color:#1a1a1a;font-size:15px;line-height:1.7;">
                 Vous &ecirc;tes maintenant inscrit(e) &agrave; la newsletter hebdomadaire
-                <strong>Lumi&egrave;re &mdash; FLE Agent</strong>.
+                <strong>Lumi&egrave;re - FLE Agent</strong>.
               </p>
 
               <!-- Preferences summary -->
@@ -303,8 +310,8 @@ def build_welcome_html(
 </html>"""
 
 
-def load_config() -> dict | None:
-    required = ["EMAIL_SENDER", "EMAIL_APP_PASSWORD"]
+def load_config() -> "dict | None":
+    required = ["GMAIL_CLIENT_ID", "GMAIL_CLIENT_SECRET", "GMAIL_REFRESH_TOKEN", "EMAIL_SENDER"]
     config = {}
     missing = []
     for key in required:
@@ -318,38 +325,55 @@ def load_config() -> dict | None:
         print(json.dumps({
             "error": "missing_env_keys",
             "message": f"Missing required .env keys: {', '.join(missing)}. "
-                       f"Add them to your .env file.",
+                       f"Add them to your .env file. Run tools/get_gmail_token.py to obtain GMAIL_REFRESH_TOKEN.",
         }))
         return None
 
     config["EMAIL_RECIPIENT"] = os.getenv("EMAIL_RECIPIENT", "")
-    config["EMAIL_SMTP_HOST"] = os.getenv("EMAIL_SMTP_HOST", "smtp.gmail.com")
-    config["EMAIL_SMTP_PORT"] = int(os.getenv("EMAIL_SMTP_PORT", "587"))
     return config
 
 
-def _smtp_send(config: dict, recipient: str, msg) -> dict | None:
-    """Send a pre-built MIME message. Returns error dict or None on success."""
+def _gmail_send(
+    config: dict,
+    to: str,
+    subject: str,
+    html: str,
+    pdf_bytes: "bytes | None" = None,
+    pdf_filename: "str | None" = None,
+) -> "dict | None":
+    """Send via Gmail API. Returns error dict or None on success."""
     try:
-        with smtplib.SMTP(config["EMAIL_SMTP_HOST"], config["EMAIL_SMTP_PORT"], timeout=10) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(config["EMAIL_SENDER"], config["EMAIL_APP_PASSWORD"])
-            server.sendmail(config["EMAIL_SENDER"], recipient, msg.as_string())
-    except smtplib.SMTPAuthenticationError:
-        return {
-            "error": "auth_failed",
-            "message": (
-                "Gmail authentication failed. Make sure EMAIL_APP_PASSWORD is a Gmail App "
-                "Password (not your regular password). Generate one at: "
-                "https://myaccount.google.com/apppasswords"
-            ),
-        }
-    except smtplib.SMTPException as e:
-        return {"error": "smtp_error", "message": str(e)}
-    except OSError as e:
-        return {"error": "connection_error", "message": str(e)}
+        creds = Credentials(
+            token=None,
+            refresh_token=config["GMAIL_REFRESH_TOKEN"],
+            token_uri="https://oauth2.googleapis.com/token",
+            client_id=config["GMAIL_CLIENT_ID"],
+            client_secret=config["GMAIL_CLIENT_SECRET"],
+            scopes=["https://www.googleapis.com/auth/gmail.send"],
+        )
+        creds.refresh(Request())
+
+        msg = MIMEMultipart("mixed")
+        msg["From"] = config["EMAIL_SENDER"]
+        msg["To"] = to
+        msg["Subject"] = subject
+        msg.attach(MIMEText(html, "html", "utf-8"))
+
+        if pdf_bytes and pdf_filename:
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(pdf_bytes)
+            encoders.encode_base64(part)
+            part.add_header("Content-Disposition", f'attachment; filename="{pdf_filename}"')
+            msg.attach(part)
+
+        raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+        service = build("gmail", "v1", credentials=creds)
+        service.users().messages().send(userId="me", body={"raw": raw}).execute()
+
+    except HttpError as e:
+        return {"error": "gmail_api_error", "message": str(e)}
+    except Exception as e:
+        return {"error": "gmail_error", "message": str(e)}
     return None
 
 
@@ -378,28 +402,18 @@ def send(
     topic_display = TOPIC_DISPLAY.get(topic, topic.replace("_", " ").title())
     subject = f"Votre exercice de français - Niveau {level} | {topic_display}"
 
-    msg = MIMEMultipart("mixed")
-    msg["From"] = config["EMAIL_SENDER"]
-    msg["To"] = to
-    msg["Subject"] = subject
-
     html_body = build_html_body(
         level, topic, source_url, source_name,
         manage_url=manage_url,
         unsubscribe_url=unsubscribe_url,
         recipient_name=recipient_name,
     )
-    msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     pdf_filename = os.path.basename(pdf_path)
     with open(pdf_path, "rb") as f:
-        part = MIMEBase("application", "octet-stream")
-        part.set_payload(f.read())
-    encoders.encode_base64(part)
-    part.add_header("Content-Disposition", f'attachment; filename="{pdf_filename}"')
-    msg.attach(part)
+        pdf_bytes = f.read()
 
-    err = _smtp_send(config, to, msg)
+    err = _gmail_send(config, to, subject, html_body, pdf_bytes=pdf_bytes, pdf_filename=pdf_filename)
     if err:
         return err
 
@@ -417,17 +431,11 @@ def send_welcome(
     """Send a welcome email (no PDF) after a new subscription."""
     config = load_config()
     if config is None:
-        return {"error": "missing_env_keys", "message": "EMAIL_SENDER or EMAIL_APP_PASSWORD not set."}
-
-    msg = MIMEMultipart("mixed")
-    msg["From"] = config["EMAIL_SENDER"]
-    msg["To"] = recipient
-    msg["Subject"] = "Bienvenue sur Lumière - FLE Agent 🎉"
+        return {"error": "missing_env_keys", "message": "GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET, or GMAIL_REFRESH_TOKEN not set."}
 
     html_body = build_welcome_html(name, level, topic, manage_url, unsubscribe_url)
-    msg.attach(MIMEText(html_body, "html", "utf-8"))
 
-    err = _smtp_send(config, recipient, msg)
+    err = _gmail_send(config, recipient, "Bienvenue sur Lumière - FLE Agent 🎉", html_body)
     if err:
         return err
 

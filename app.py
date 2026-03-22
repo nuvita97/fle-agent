@@ -524,10 +524,14 @@ def subscribe():
             sys.path.insert(0, os.path.join(BASE_DIR, "tools"))
             from send_email import send_welcome  # noqa: PLC0415
             manage_url, unsubscribe_url = _subscriber_urls(token)
-            send_welcome(
+            result = send_welcome(
                 recipient=email, name=name, level=level, topic=topic,
                 manage_url=manage_url, unsubscribe_url=unsubscribe_url,
             )
+            if "error" in result:
+                app.logger.warning(f"Welcome email failed: {result}")
+            else:
+                app.logger.info(f"Welcome email sent to {email}")
         except Exception as e:
             app.logger.warning(f"Welcome email failed: {e}")
 
