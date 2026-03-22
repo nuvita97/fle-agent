@@ -37,7 +37,9 @@ from flask import (
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv("FLASK_SECRET_KEY", "fle-agent-dev-secret-2026")
+app.secret_key = os.getenv("FLASK_SECRET_KEY")
+if not app.secret_key:
+    raise ValueError("FLASK_SECRET_KEY must be set in .env")
 
 # ---------------------------------------------------------------------------
 # Translations
