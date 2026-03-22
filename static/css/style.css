@@ -181,22 +181,22 @@ a:hover { text-decoration: underline; }
 /* ── Topic cards ─────────────────────────────────────────── */
 .topic-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
 }
 .topic-card {
   position: relative;
   cursor: pointer;
 }
 .topic-card input { display: none; }
-.topic-card .topic-icon { font-size: 1.6rem; display: block; margin-bottom: 6px; }
-.topic-card .topic-name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; }
+.topic-card .topic-icon { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+.topic-card .topic-name { font-size: 0.72rem; font-weight: 600; line-height: 1.25; }
 .topic-card > span {
   display: block;
 }
 .topic-card > :not(input) {
   display: block;
-  padding: 16px 12px;
+  padding: 10px 6px;
   border-radius: 8px;
   border: 2px solid var(--border);
   text-align: center;
@@ -403,6 +403,7 @@ a:hover { text-decoration: underline; }
 }
 
 .submit-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.download-row { display: flex; justify-content: center; margin: 32px 0 16px; }
 
 .score-banner {
   margin-top: 24px;
@@ -484,7 +485,7 @@ a:hover { text-decoration: underline; }
   .card { padding: 20px 16px; }
   .hero h1 { font-size: clamp(0.75rem, 4.5vw, 1.5rem); }
   .form-row { grid-template-columns: 1fr; }
-  .topic-grid { grid-template-columns: repeat(2, 1fr); }
+  .topic-grid { grid-template-columns: repeat(4, 1fr); }
   .ex-header-inner { flex-direction: column; }
   .vocab-header, .vocab-row { grid-template-columns: 1fr; }
   .vocab-header span:last-child { padding-left: 0; }
