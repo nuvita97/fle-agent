@@ -329,7 +329,7 @@ def load_config() -> dict | None:
 def _smtp_send(config: dict, recipient: str, msg) -> dict | None:
     """Send a pre-built MIME message. Returns error dict or None on success."""
     try:
-        with smtplib.SMTP(config["EMAIL_SMTP_HOST"], config["EMAIL_SMTP_PORT"]) as server:
+        with smtplib.SMTP(config["EMAIL_SMTP_HOST"], config["EMAIL_SMTP_PORT"], timeout=10) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()
