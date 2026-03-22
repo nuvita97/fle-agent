@@ -554,18 +554,21 @@ def subscribe():
         return _render(sub_error="Erreur technique. Réessayez plus tard." if lang == "fr"
                        else "Technical error. Please try again later.")
 
-    # Send welcome email (best-effort — don't block on failure)
+    # Send welcome email in background thread — never block the request
     if token:
-        try:
-            sys.path.insert(0, os.path.join(BASE_DIR, "tools"))
-            from send_email import send_welcome  # noqa: PLC0415
-            manage_url, unsubscribe_url = _subscriber_urls(token)
-            send_welcome(
-                recipient=email, name=name, level=level, topic=topic,
-                manage_url=manage_url, unsubscribe_url=unsubscribe_url,
-            )
-        except Exception as e:
-            app.logger.warning(f"Welcome email failed: {e}")
+        import threading
+        sys.path.insert(0, os.path.join(BASE_DIR, "tools"))
+        from send_email import send_welcome  # noqa: PLC0415
+        manage_url, unsubscribe_url = _subscriber_urls(token)
+        def _send():
+            try:
+                send_welcome(
+                    recipient=email, name=name, level=level, topic=topic,
+                    manage_url=manage_url, unsubscribe_url=unsubscribe_url,
+                )
+            except Exception as e:
+                app.logger.warning(f"Welcome email failed: {e}")
+        threading.Thread(target=_send, daemon=True).start()
 
     success_msg = (f"Merci {name} ! Vous êtes inscrit(e). Vérifiez votre boîte e-mail."
                    if lang == "fr" else
