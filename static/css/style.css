@@ -480,6 +480,15 @@ a:hover { text-decoration: underline; }
   font-size: 0.83rem;
 }
 
+/* ── Open Question ───────────────────────────────────────── */
+.open-question-text {
+  font-size: 1.08rem;
+  font-weight: 600;
+  color: var(--body);
+  margin-bottom: 10px;
+  line-height: 1.55;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 600px) {
   .card { padding: 20px 16px; }
