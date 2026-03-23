@@ -382,6 +382,7 @@ def send(
     manage_url: str = "",
     unsubscribe_url: str = "",
     recipient_name: str = "",
+    pdf_filename: str = "",
 ) -> dict:
     config = load_config()
     if config is None:
@@ -404,7 +405,7 @@ def send(
         recipient_name=recipient_name,
     )
 
-    pdf_filename = os.path.basename(pdf_path)
+    pdf_filename = pdf_filename or os.path.basename(pdf_path)
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
 

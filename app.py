@@ -145,7 +145,9 @@ TRANSLATIONS = {
 # ---------------------------------------------------------------------------
 DEMO_MODE = os.getenv("DEMO_MODE", "true").lower() == "true"
 BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
-BASE_URL  = os.getenv("BASE_URL", "http://localhost:5000").rstrip("/")
+BASE_URL  = os.getenv("BASE_URL", "http://localhost:5001").rstrip("/")
+# Public URL used in emails — always points to the live site regardless of local BASE_URL
+PUBLIC_URL = os.getenv("PUBLIC_URL", "https://fle-agent.onrender.com").rstrip("/")
 
 TOPIC_DISPLAY = {
     "vie_quotidienne":        "Vie quotidienne & Société",
@@ -287,8 +289,8 @@ def _get_supabase():
 
 
 def _subscriber_urls(token: str) -> tuple[str, str]:
-    manage_url = f"{BASE_URL}/manage?token={token}"
-    unsubscribe_url = f"{BASE_URL}/unsubscribe?token={token}"
+    manage_url = f"{PUBLIC_URL}/manage?token={token}"
+    unsubscribe_url = f"{PUBLIC_URL}/unsubscribe?token={token}"
     return manage_url, unsubscribe_url
 
 
@@ -360,6 +362,9 @@ def send_newsletter_to_all() -> dict:
             tmp.write(pdf_bytes)
             tmp_path = tmp.name
 
+        today = datetime.utcnow().strftime("%Y-%m-%d")
+        desired_filename = f"exercice_{actual_level}_{actual_topic}_{today}.pdf"
+
         manage_url, unsubscribe_url = _subscriber_urls(token)
         result = email_send(
             pdf_path=tmp_path,
@@ -371,6 +376,7 @@ def send_newsletter_to_all() -> dict:
             manage_url=manage_url,
             unsubscribe_url=unsubscribe_url,
             recipient_name=name,
+            pdf_filename=desired_filename,
         )
         os.unlink(tmp_path)
 
@@ -513,8 +519,9 @@ def download():
 
     buf = io.BytesIO(pdf_bytes)
     buf.seek(0)
+    today = datetime.utcnow().strftime("%Y-%m-%d")
     return send_file(buf, as_attachment=True, mimetype="application/pdf",
-                     download_name=f"exercise_{level}_{topic}.pdf")
+                     download_name=f"exercice_{level}_{topic}_{today}.pdf")
 
 
 @app.route("/subscribe", methods=["POST"])
@@ -634,12 +641,25 @@ def manage():
                            topics=TOPIC_DISPLAY, levels=VALID_LEVELS, token=token)
 
 
-@app.route("/unsubscribe")
+@app.route("/unsubscribe", methods=["GET", "POST"])
 def unsubscribe():
-    token = request.args.get("token", "")
+    token = request.args.get("token") or request.form.get("token", "")
     if not token:
         return redirect(url_for("index"))
 
+    if request.method == "GET":
+        # Show confirmation page — do NOT delete yet.
+        # Email clients pre-fetch GET links, which would delete the row immediately.
+        try:
+            sb = _get_supabase()
+            rows = sb.table("subscribers").select("name").eq("token", token).execute().data
+            name = rows[0].get("name", "") if rows else ""
+        except Exception:
+            name = ""
+        return render_template("manage.html", confirm_unsubscribe=True, name=name,
+                               topics=TOPIC_DISPLAY, levels=VALID_LEVELS, token=token)
+
+    # POST — user explicitly confirmed
     try:
         sb = _get_supabase()
         rows = sb.table("subscribers").select("name,email").eq("token", token).execute().data
