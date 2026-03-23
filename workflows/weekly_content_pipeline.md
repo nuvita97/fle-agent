@@ -6,12 +6,21 @@ Every Monday, automatically refresh the exercise database with 35 new AI-generat
 
 ## Schedule
 
-| Time (Europe/Paris) | Job | Tool |
+| Time (Europe/Paris) | Job | Trigger |
 |---|---|---|
-| **Monday 06:00** | Generate 35 exercises → insert into Supabase | `tools/weekly_generate.py` |
-| **Monday 12:00** | Send latest exercise to each subscriber | `send_newsletter_to_all()` in `app.py` |
+| **Monday 08:00** | Generate 35 exercises → insert into Supabase | GitHub Actions → `/admin/trigger-generate` |
+| **Monday 12:00** | Send latest exercise to each subscriber | GitHub Actions → `/admin/trigger-newsletter` |
 
-Both jobs run automatically via **APScheduler** when the Flask app is running.
+Jobs are triggered by **GitHub Actions** (`.github/workflows/weekly_schedule.yml`), which calls the admin HTTP endpoints. This works even when the Render.com app is sleeping — the HTTP request wakes the app first.
+
+**Why not APScheduler alone?** APScheduler only fires when the Flask process is alive. On Render.com free tier, the app sleeps after 15 minutes of inactivity. At 6am Monday with no traffic, the process is asleep and the cron never runs.
+
+### Required GitHub Secrets
+
+| Secret | Value |
+|---|---|
+| `APP_BASE_URL` | Your Render app URL, e.g. `https://fle-agent.onrender.com` |
+| `ADMIN_TOKEN` | Same value as `ADMIN_TOKEN` in your `.env` |
 
 ---
 

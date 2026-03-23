@@ -1,0 +1,74 @@
+name: Weekly Content Pipeline
+
+# Runs in UTC. Europe/Paris is CET (UTC+1) in winter, CEST (UTC+2) in summer.
+# Using 07:00 UTC = 08:00 CET / 09:00 CEST — targets 08:00 Paris for exercise generation.
+# Using 11:00 UTC = 12:00 CET / 13:00 CEST — targets 12:00 Paris for newsletter send.
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"   # Monday 07:00 UTC → generate exercises (08:00 Paris CET)
+    - cron: "0 11 * * 1"  # Monday 11:00 UTC → send newsletter (12:00 Paris CET)
+  workflow_dispatch:
+    inputs:
+      job:
+        description: "Which job to run"
+        required: true
+        default: "generate"
+        type: choice
+        options:
+          - generate
+          - newsletter
+          - both
+
+jobs:
+  generate:
+    name: Generate exercises (Monday 06:00 Paris)
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && (
+        github.event.inputs.job == 'generate' || github.event.inputs.job == 'both'
+      ) ||
+      (github.event_name == 'schedule' && github.event.schedule == '0 7 * * 1')
+    steps:
+      - name: Trigger weekly exercise generation
+        run: |
+          response=$(curl -s -o /tmp/gen_response.json -w "%{http_code}" \
+            -X POST "${{ secrets.APP_BASE_URL }}/admin/trigger-generate" \
+            -H "X-Admin-Token: ${{ secrets.ADMIN_TOKEN }}" \
+            -H "Content-Type: application/json")
+          echo "HTTP status: $response"
+          echo "Response body:"
+          cat /tmp/gen_response.json
+          if [ "$response" -ne 200 ]; then
+            echo "ERROR: trigger-generate returned HTTP $response"
+            exit 1
+          fi
+
+  newsletter:
+    name: Send newsletter (Monday 12:00 Paris)
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'workflow_dispatch' && (
+        github.event.inputs.job == 'newsletter' || github.event.inputs.job == 'both'
+      ) ||
+      (github.event_name == 'schedule' && github.event.schedule == '0 11 * * 1')
+    steps:
+      - name: Wait for generation to complete (schedule-triggered only)
+        if: github.event_name == 'schedule'
+        run: |
+          echo "Waiting 5 minutes for generation to finish before sending newsletter..."
+          sleep 300
+
+      - name: Trigger newsletter send
+        run: |
+          response=$(curl -s -o /tmp/nl_response.json -w "%{http_code}" \
+            -X POST "${{ secrets.APP_BASE_URL }}/admin/trigger-newsletter" \
+            -H "X-Admin-Token: ${{ secrets.ADMIN_TOKEN }}" \
+            -H "Content-Type: application/json")
+          echo "HTTP status: $response"
+          echo "Response body:"
+          cat /tmp/nl_response.json
+          if [ "$response" -ne 200 ]; then
+            echo "ERROR: trigger-newsletter returned HTTP $response"
+            exit 1
+          fi
