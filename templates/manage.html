@@ -4,15 +4,32 @@
 {% block content %}
 <div class="hero" style="padding:40px 24px 36px;">
   <div class="hero-inner">
-    <h1>{% if unsubscribed %}Au revoir !{% else %}Mon abonnement{% endif %}</h1>
+    <h1>{% if unsubscribed %}Au revoir !{% elif confirm_unsubscribe %}Se désabonner{% else %}Mon abonnement{% endif %}</h1>
   </div>
 </div>
 
 <div class="container" style="max-width:560px;">
   <section class="card">
 
-    {% if unsubscribed %}
-      <!-- Unsubscribe confirmation -->
+    {% if confirm_unsubscribe %}
+      <!-- Unsubscribe confirmation prompt -->
+      <div style="text-align:center;padding:16px 0;">
+        <p style="font-size:2.5rem;margin-bottom:12px;">🤔</p>
+        <h2 class="section-title" style="margin-bottom:12px;">
+          Voulez-vous vraiment vous désabonner{% if name %}, {{ name }}{% endif %} ?
+        </h2>
+        <p style="color:var(--muted);font-size:0.95rem;margin-bottom:24px;">
+          Vous ne recevrez plus d'exercices hebdomadaires.
+        </p>
+        <form action="{{ url_for('unsubscribe') }}" method="POST" style="display:inline-flex;gap:12px;">
+          <input type="hidden" name="token" value="{{ token }}">
+          <button type="submit" class="btn btn-primary">Oui, me désabonner</button>
+          <a href="{{ url_for('manage') }}?token={{ token }}" class="btn" style="background:var(--surface2);">Annuler</a>
+        </form>
+      </div>
+
+    {% elif unsubscribed %}
+      <!-- Unsubscribe done -->
       <div style="text-align:center;padding:16px 0;">
         <p style="font-size:2.5rem;margin-bottom:12px;">👋</p>
         <h2 class="section-title" style="margin-bottom:12px;">
@@ -83,8 +100,7 @@
         <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
           <button type="submit" class="btn btn-primary">Enregistrer</button>
           <a href="{{ url_for('unsubscribe') }}?token={{ token }}"
-             style="font-size:0.85rem;color:var(--muted);"
-             onclick="return confirm('Êtes-vous sûr(e) de vouloir vous désabonner ?')">
+             style="font-size:0.85rem;color:var(--muted);">
             Se désabonner
           </a>
         </div>
