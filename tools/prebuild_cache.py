@@ -79,16 +79,28 @@ def exercise_exists(sb, level: str, topic: str) -> bool:
 
 def upsert_exercise(sb, result: dict) -> None:
     row = {
-        "level":      result["level"],
-        "topic":      result["topic"],
-        "text":       result["text"],
-        "url":        result.get("url", ""),
-        "site_name":  result.get("site_name", ""),
-        "word_count": result.get("word_count", 0),
-        "questions":  result.get("questions", []),
-        "vocabulary": result.get("vocabulary", []),
+        "level":         result["level"],
+        "topic":         result["topic"],
+        "text":          result["text"],
+        "word_count":    result.get("word_count", 0),
+        "questions":     result.get("questions", []),
+        "vocabulary":    result.get("vocabulary", []),
+        "open_question": result.get("open_question", ""),
     }
-    sb.table("exercises").upsert(row, on_conflict="level,topic").execute()
+    level, topic = result["level"], result["topic"]
+    existing = (
+        sb.table("exercises")
+        .select("id")
+        .eq("level", level)
+        .eq("topic", topic)
+        .limit(1)
+        .execute()
+        .data
+    )
+    if existing:
+        sb.table("exercises").update(row).eq("id", existing[0]["id"]).execute()
+    else:
+        sb.table("exercises").insert(row).execute()
 
 
 # ---------------------------------------------------------------------------
@@ -128,22 +140,28 @@ def build_one(level: str, topic: str, python: str) -> dict | str:
 def main():
     parser = argparse.ArgumentParser(description="Pre-build exercises for all 35 combinations.")
     parser.add_argument("--force", action="store_true", help="Rebuild even if already exists in Supabase")
+    parser.add_argument("--level", choices=["A1", "A2", "B1", "B2", "C1"], help="Run for a single level only")
+    parser.add_argument("--topic", choices=TOPICS, help="Run for a single topic only")
     args = parser.parse_args()
+
+    levels = [args.level] if args.level else LEVELS
+    topics = [args.topic] if args.topic else TOPICS
 
     sb = get_supabase()
     python = sys.executable
 
     succeeded, skipped, failed = 0, 0, []
     n = 0
+    total = len(levels) * len(topics)
 
     print(f"\n{'='*60}")
-    print(f"  FLE-agent — Pre-building exercises ({TOTAL} combinations)")
+    print(f"  FLE-agent — Pre-building exercises ({total} combinations)")
     print(f"{'='*60}\n")
 
-    for level in LEVELS:
-        for topic in TOPICS:
+    for level in levels:
+        for topic in topics:
             n += 1
-            label = f"[{n:02d}/{TOTAL}] {level} / {TOPIC_DISPLAY[topic]}"
+            label = f"[{n:02d}/{total}] {level} / {TOPIC_DISPLAY[topic]}"
 
             if not args.force and exercise_exists(sb, level, topic):
                 print(f"  ⏭  {label}  →  already in Supabase, skipping")
