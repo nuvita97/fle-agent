@@ -8,7 +8,7 @@
 const TOTAL_Q   = QUESTIONS.length;  // injected by Jinja
 let answered    = 0;
 let submitted   = false;
-let timerSecs   = 5 * 60;
+let timerSecs   = 10 * 60;
 let timerHandle = null;
 
 // ── DOM helpers ────────────────────────────────────────────
@@ -160,7 +160,7 @@ function initRestart() {
     // Reset state
     submitted = false;
     answered  = 0;
-    timerSecs = 5 * 60;
+    timerSecs = 10 * 60;
 
     // Reset UI
     $$(".choice").forEach(c => {
