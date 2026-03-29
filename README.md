@@ -47,7 +47,7 @@ Each PDF is 4 pages:
 
 ### Weekly Newsletter
 - Every Monday 06:00 Paris time: generate fresh exercises via Claude API, insert into Supabase
-- Every Monday 12:00 Paris time: send each subscriber their preferred level+topic as a PDF email
+- Every Monday 09:00 Paris time: send each subscriber their preferred level+topic as a PDF email
 - GitHub Actions wakes the Render app to ensure jobs run even if the server is sleeping
 
 ---
@@ -94,7 +94,7 @@ FLE-agent/
 │
 ├── .github/
 │   └── workflows/
-│       └── weekly_schedule.yml     # GitHub Actions: trigger jobs Mon 07:00 & 11:00 UTC
+│       └── weekly_schedule.yml     # GitHub Actions: trigger newsletter Mon 08:00 UTC (09:00 Paris)
 │
 ├── .env                            # Secrets (never committed)
 └── .gitignore
