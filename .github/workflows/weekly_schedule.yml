@@ -1,11 +1,11 @@
 name: Weekly Content Pipeline
 
 # Runs in UTC. Europe/Paris is CET (UTC+1) in winter, CEST (UTC+2) in summer.
-# Using 08:00 UTC = 09:00 CET / 10:00 CEST — targets 09:00 Paris for newsletter send.
+# Using 06:00 UTC = 07:00 CET / 08:00 CEST — targets 08:00 Paris for newsletter send.
 
 on:
   schedule:
-    - cron: "0 8 * * 1"  # Monday 08:00 UTC → send newsletter (09:00 Paris CET)
+    - cron: "0 6 * * 1" 
   workflow_dispatch:
     inputs:
       job:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 8 * * 1')
+      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1')
     steps:
       - name: Trigger newsletter send
         run: |
