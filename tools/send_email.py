@@ -121,7 +121,7 @@ def build_html_body(
           <tr>
             <td style="background-color:#4a6fa5;padding:28px 32px;text-align:center;">
               <p style="margin:0 0 4px;color:rgba(255,255,255,0.75);font-size:12px;letter-spacing:1px;text-transform:uppercase;">
-                &Eacute;voli &mdash; FLE Agent
+                &Eacute;voli - FLE Agent
               </p>
               <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:0.5px;">
                 Exercice de Fran&ccedil;ais
