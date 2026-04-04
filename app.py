@@ -205,6 +205,75 @@ def load_cached_exercise(level: str, topic: str) -> dict | None:
         return None
 
 
+def fetch_exercise_ids(level: str, topic: str) -> list[str]:
+    """Fetch all exercise IDs for a given level+topic (lightweight, IDs only)."""
+    try:
+        sb = _get_supabase()
+        rows = (
+            sb.table("exercises")
+            .select("id")
+            .eq("level", level)
+            .eq("topic", topic)
+            .execute()
+            .data
+        )
+        return [row["id"] for row in rows] if rows else []
+    except Exception:
+        return []
+
+
+def load_exercise_by_id(exercise_id: str) -> dict | None:
+    """Fetch a single full exercise row by UUID."""
+    try:
+        sb = _get_supabase()
+        rows = (
+            sb.table("exercises")
+            .select("*")
+            .eq("id", exercise_id)
+            .limit(1)
+            .execute()
+            .data
+        )
+        return rows[0] if rows else None
+    except Exception:
+        return None
+
+
+def get_next_exercise_id(level: str, topic: str) -> str | None:
+    """Return next exercise ID from the non-repeating shuffled queue.
+
+    Session structure:
+        session["lesson_queues"] = {
+            "A1_vie_quotidienne": {"order": ["uuid1", ...], "index": 0}
+        }
+    - First call: fetches all IDs, shuffles once, stores order, returns first.
+    - Subsequent calls: advances index circularly (wraps after exhaustion).
+    """
+    queue_key = f"{level}_{topic}"
+    queues = session.get("lesson_queues", {})
+    queue = queues.get(queue_key)
+
+    if not queue:
+        ids = fetch_exercise_ids(level, topic)
+        if not ids:
+            return None
+        random.shuffle(ids)
+        queue = {"order": ids, "index": 0}
+
+    order = queue["order"]
+    if not order:
+        return None
+
+    idx = queue["index"] % len(order)   # circular wrap
+    exercise_id = order[idx]
+    queue["index"] = idx + 1
+
+    queues[queue_key] = queue
+    session["lesson_queues"] = queues
+    session.modified = True             # required for nested dict mutations
+    return exercise_id
+
+
 def load_latest_exercise(level: str, topic: str) -> dict | None:
     """Load the most recently generated exercise for a specific level+topic.
 
@@ -456,9 +525,9 @@ def generate():
     if level not in VALID_LEVELS or topic not in VALID_TOPICS:
         return redirect(url_for("index"))
 
-    # Always try the per-combination cache first
-    data = load_cached_exercise(level, topic)
-    if data is None:
+    exercise_id = get_next_exercise_id(level, topic)
+
+    if exercise_id is None:
         if DEMO_MODE:
             return render_template("index.html", topics=TOPIC_DISPLAY, topic_icons=TOPIC_ICONS,
                                    levels=VALID_LEVELS,
@@ -469,6 +538,11 @@ def generate():
         if data is None:
             return render_template("index.html", topics=TOPIC_DISPLAY, topic_icons=TOPIC_ICONS,
                                    levels=VALID_LEVELS, error="Erreur lors de la génération. Vérifiez les outils.")
+        session["fallback_exercise"] = data
+        session["current_exercise_id"] = None
+    else:
+        session["fallback_exercise"] = None
+        session["current_exercise_id"] = exercise_id
 
     session["level"] = level
     session["topic"] = topic
@@ -482,7 +556,11 @@ def exercise():
     topic = session.get("topic")
     if not level or not topic:
         return redirect(url_for("index"))
-    data = load_cached_exercise(level, topic)
+    exercise_id = session.get("current_exercise_id")
+    if exercise_id:
+        data = load_exercise_by_id(exercise_id)
+    else:
+        data = session.get("fallback_exercise")
     if not data:
         return redirect(url_for("index"))
     data["topic_display"] = TOPIC_DISPLAY[topic]
@@ -501,7 +579,11 @@ def download():
     if not level or not topic:
         return "Niveau ou thème manquant.", 400
 
-    data = load_cached_exercise(level, topic)
+    exercise_id = session.get("current_exercise_id")
+    if exercise_id:
+        data = load_exercise_by_id(exercise_id)
+    else:
+        data = session.get("fallback_exercise")
     if not data:
         return "Données d'exercice introuvables.", 404
 
