@@ -139,8 +139,11 @@ Before generating any lesson, check what already exists for the same level + top
 from supabase import create_client
 import os; from dotenv import load_dotenv; load_dotenv()
 sb = create_client(os.environ['SUPABASE_URL'], os.environ['SUPABASE_KEY'])
-rows = sb.table('lessons').select('title').eq('level','LEVEL').eq('topic','TOPIC').execute().data
-for r in rows: print(r['title'])
+rows = sb.table('exercises').select('text').eq('level','C1').eq('topic',topic).execute().data
+    print(f'--- {topic} ---')
+    for r in rows:
+        title = r['text'].split('\n\n')[0] if r['text'] else '(no text)'
+        print(' ', title)
 "
 ```
 
