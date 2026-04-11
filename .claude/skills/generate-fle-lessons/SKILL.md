@@ -93,7 +93,7 @@ Get the timestamp at the start with: `date +%Y%m%d_%H%M%S`
 
 ### Text
 1. Title on the first line, then `\n\n`, then paragraphs separated by `\n\n`
-2. **Word count must be within the level range — count before finalising**
+2. **Word count must be within the level range.** Do NOT estimate by hand — French contractions (`l'art`, `d'un`, `c'est`) and hyphenated words (`Jean-Luc`, `au-delà`) each count as 1 token in Python `.split()` but are easy to miscount manually. Use the post-write patch step below to set the exact value automatically.
 3. All content in French; factual, anchored in francophone reality
 4. No invented unverifiable statistics
 
@@ -125,8 +125,26 @@ Get the timestamp at the start with: `date +%Y%m%d_%H%M%S`
 
 ### JSON
 16. Valid JSON — handle apostrophes and accented characters correctly
-17. `word_count` must reflect the actual word count of the body text only — **do not count the title line**
+17. `word_count` must reflect the actual word count of the body text only — **do not count the title line**. Always set it via the post-write patch step below, never by hand.
 18. Each lesson must be unique — different title, different angle
+
+### Post-write word count patch (run after writing EVERY file)
+After each `Write` tool call, immediately run this command to compute the exact word count and patch the file:
+
+```bash
+.venv/bin/python -c "
+import json, sys
+f = 'PATH/TO/FILE.json'
+d = json.load(open(f, encoding='utf-8'))
+body = '\n\n'.join(d['text'].split('\n\n')[1:])
+wc = len(body.split())
+d['word_count'] = wc
+json.dump(d, open(f, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+print(f'word_count set to {wc}')
+"
+```
+
+This ensures `word_count` always matches what the verifier script computes, with no manual adjustment needed.
 
 ---
 
@@ -157,13 +175,16 @@ If you cannot query Supabase (no credentials, offline, etc.), note this explicit
 ---
 
 ## Self-check before writing each file
-- [ ] Word count is within the level range (body text only, title excluded)
+- [ ] Word count is estimated to be within the level range (will be set precisely by the post-write patch)
 - [ ] Exactly 5 questions, each covering a different question type
 - [ ] Correct answer letters are varied across the 5 questions
 - [ ] Distractors are homogeneous, plausible, unambiguous, and length-balanced
 - [ ] 8–10 vocabulary items
 - [ ] Valid JSON syntax
 - [ ] Title and angle are different from existing lessons at the same level + topic in Supabase
+
+## After writing each file
+Run the post-write word count patch (rule 17) immediately — before moving to the next lesson.
 
 ---
 
