@@ -11,7 +11,6 @@ Routes:
   POST /manage      Save updated preferences to Supabase
   GET  /unsubscribe Remove subscriber from Supabase
   POST /admin/trigger-newsletter  Manually trigger the weekly newsletter
-  POST /admin/trigger-generate    Manually trigger the weekly exercise generation
 """
 
 import io
@@ -365,25 +364,7 @@ def _subscriber_urls(token: str) -> tuple[str, str]:
 
 
 # ---------------------------------------------------------------------------
-# Weekly generation job (Monday 6am)
-# ---------------------------------------------------------------------------
-
-def generate_weekly_exercises() -> None:
-    """Run tools/weekly_generate.py to generate all 35 exercises and insert into Supabase."""
-    python = sys.executable
-    result = subprocess.run(
-        [python, "tools/weekly_generate.py"],
-        capture_output=True, text=True,
-    )
-    if result.returncode == 0:
-        app.logger.info(f"Weekly generation succeeded:\n{result.stdout}")
-    else:
-        app.logger.error(f"Weekly generation FAILED (exit {result.returncode}):\n"
-                         f"{result.stdout}\n{result.stderr}")
-
-
-# ---------------------------------------------------------------------------
-# Newsletter job (Monday 12pm)
+# Newsletter job (triggered by GitHub Actions)
 # ---------------------------------------------------------------------------
 
 def send_newsletter_to_all() -> dict:
@@ -459,31 +440,6 @@ def send_newsletter_to_all() -> dict:
     app.logger.info(f"Newsletter done — sent: {len(results['sent'])}, "
                     f"failed: {len(results['failed'])}, skipped: {len(results['skipped'])}")
     return results
-
-
-# ---------------------------------------------------------------------------
-# Scheduler (Monday 12:00 Europe/Paris)
-# ---------------------------------------------------------------------------
-
-def _start_scheduler():
-    try:
-        from apscheduler.schedulers.background import BackgroundScheduler  # noqa: PLC0415
-        scheduler = BackgroundScheduler(timezone="Europe/Paris")
-        scheduler.add_job(generate_weekly_exercises, "cron", day_of_week="mon", hour=6, minute=0,
-                          id="weekly_generate", replace_existing=True)
-        scheduler.add_job(send_newsletter_to_all, "cron", day_of_week="mon", hour=12, minute=0,
-                          id="weekly_newsletter", replace_existing=True)
-        scheduler.start()
-        app.logger.info("APScheduler started — generation Monday 06:00, newsletter Monday 12:00 Europe/Paris.")
-    except ImportError:
-        app.logger.warning("APScheduler not installed — weekly schedule disabled. Run: pip install APScheduler")
-    except Exception as e:
-        app.logger.error(f"Scheduler error: {e}")
-
-
-# Start scheduler when the app module is loaded (not during testing)
-if not os.getenv("FLASK_TESTING"):
-    _start_scheduler()
 
 
 # ---------------------------------------------------------------------------
@@ -769,20 +725,6 @@ def admin_trigger_newsletter():
 
     results = send_newsletter_to_all()
     return jsonify(results)
-
-
-@app.route("/admin/trigger-generate", methods=["POST"])
-def admin_trigger_generate():
-    """Manually trigger the weekly exercise generation (runs tools/weekly_generate.py)."""
-    admin_token = os.getenv("ADMIN_TOKEN", "")
-    provided = request.headers.get("X-Admin-Token", "")
-    if not admin_token or provided != admin_token:
-        return jsonify({"error": "unauthorized"}), 401
-
-    import threading
-    thread = threading.Thread(target=generate_weekly_exercises, daemon=True)
-    thread.start()
-    return jsonify({"status": "started", "message": "Weekly generation running in background. Check server logs."})
 
 
 if __name__ == "__main__":
