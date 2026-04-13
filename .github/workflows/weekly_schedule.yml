@@ -1,11 +1,12 @@
 name: Weekly Content Pipeline
 
 # Runs in UTC. Europe/Paris is CET (UTC+1) in winter, CEST (UTC+2) in summer.
-# Using 06:00 UTC = 07:00 CET / 08:00 CEST — targets 08:00 Paris for newsletter send.
+# Using 05:00 UTC = 06:00 CET / 07:00 CEST. Scheduled slightly early because
+# GitHub Actions cron is best-effort and often delayed 30–120 min under load.
 
 on:
   schedule:
-    - cron: "0 6 * * 1" 
+    - cron: "0 5 * * 1"
   workflow_dispatch:
     inputs:
       job:
@@ -22,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && github.event.schedule == '0 6 * * 1')
+      (github.event_name == 'schedule' && github.event.schedule == '0 5 * * 1')
     steps:
       - name: Trigger newsletter send
         run: |
