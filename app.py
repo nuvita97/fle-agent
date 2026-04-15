@@ -37,6 +37,16 @@ from flask import (
 
 load_dotenv()
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),        # No-ops cleanly if env var is absent
+    integrations=[FlaskIntegration()],
+    traces_sample_rate=0.0,             # Disable perf tracing (not needed)
+    send_default_pii=False,
+)
+
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 if not app.secret_key:
@@ -357,6 +367,28 @@ def _get_supabase():
     return create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
 
 
+def _track_usage(event_type: str, level: str = "", topic: str = "") -> None:
+    """Fire-and-forget usage tracking write to Supabase.
+
+    Runs in a background thread so it never adds latency to the HTTP response.
+    Failures are logged as warnings but never raise to the caller.
+    """
+    import threading
+
+    def _write():
+        try:
+            sb = _get_supabase()
+            sb.table("usage_events").insert({
+                "event_type": event_type,
+                "level": level or None,
+                "topic": topic or None,
+            }).execute()
+        except Exception as exc:
+            app.logger.warning(f"Usage tracking write failed: {exc}")
+
+    threading.Thread(target=_write, daemon=True).start()
+
+
 def _subscriber_urls(token: str) -> tuple[str, str]:
     manage_url = f"{PUBLIC_URL}/manage?token={token}"
     unsubscribe_url = f"{PUBLIC_URL}/unsubscribe?token={token}"
@@ -482,6 +514,7 @@ def generate():
     if level not in VALID_LEVELS or topic not in VALID_TOPICS:
         return redirect(url_for("index"))
 
+    _track_usage("generate", level=level, topic=topic)
     exercise_id = get_next_exercise_id(level, topic)
 
     if exercise_id is None:
@@ -725,6 +758,23 @@ def admin_trigger_newsletter():
 
     results = send_newsletter_to_all()
     return jsonify(results)
+
+
+@app.route("/health")
+def health():
+    """Render health check endpoint. Returns 200 while the app is alive."""
+    return jsonify({"status": "ok"}), 200
+
+
+@app.errorhandler(404)
+def not_found(_e):
+    return render_template("404.html"), 404
+
+
+@app.errorhandler(500)
+def server_error(_e):
+    # Sentry already captured the exception via FlaskIntegration.
+    return render_template("500.html"), 500
 
 
 if __name__ == "__main__":
