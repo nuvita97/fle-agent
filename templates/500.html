@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Erreur — Évoli{% endblock %}
+{% block content %}
+<div style="text-align:center;padding:80px 24px;">
+  <p style="font-size:64px;margin:0;">⚠️</p>
+  <h1 style="font-size:28px;margin:16px 0 8px;">Une erreur est survenue</h1>
+  <p style="color:#666;margin:0 0 32px;">Nous avons été notifiés et allons corriger le problème rapidement.</p>
+  <a href="{{ url_for('index') }}"
+     style="display:inline-block;padding:12px 28px;background:#4a6fa5;color:#fff;
+            border-radius:6px;text-decoration:none;font-weight:600;">
+    Retour à l'accueil
+  </a>
+</div>
+{% endblock %}
