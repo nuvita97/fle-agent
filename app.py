@@ -760,6 +760,11 @@ def admin_trigger_newsletter():
     return jsonify(results)
 
 
+@app.route("/test-error")
+def test_error():
+    raise ValueError("Sentry test error — delete this route after verifying")
+
+
 @app.route("/health")
 def health():
     """Render health check endpoint. Returns 200 while the app is alive."""
