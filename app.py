@@ -592,6 +592,7 @@ def download():
     buf = io.BytesIO(pdf_bytes)
     buf.seek(0)
     today = datetime.utcnow().strftime("%Y-%m-%d")
+    _track_usage("download", level=level, topic=topic)
     return send_file(buf, as_attachment=True, mimetype="application/pdf",
                      download_name=f"exercice_{level}_{topic}_{today}.pdf")
 
@@ -670,6 +671,7 @@ def subscribe():
 
         threading.Thread(target=_send_welcome_bg, daemon=True).start()
 
+    _track_usage("subscribe", level=level, topic=topic)
     success_msg = (f"Merci {name} ! Vous êtes inscrit(e). Vérifiez votre boîte e-mail."
                    if lang == "fr" else
                    f"Thank you {name}! You're subscribed. Check your inbox.")
@@ -705,6 +707,7 @@ def manage():
             sb.table("subscribers").update({"level": new_level, "topic": new_topic}).eq("token", token).execute()
             sub["level"] = new_level
             sub["topic"] = new_topic
+            _track_usage("change_subscription", level=new_level, topic=new_topic)
             return render_template("manage.html", sub=sub, success=True,
                                    topics=TOPIC_DISPLAY, levels=VALID_LEVELS, token=token)
         except Exception as e:
@@ -741,6 +744,7 @@ def unsubscribe():
         if rows:
             sb.table("subscribers").delete().eq("token", token).execute()
             name = rows[0].get("name", "")
+            _track_usage("unsubscribe")
             return render_template("manage.html", unsubscribed=True, name=name,
                                    topics=TOPIC_DISPLAY, levels=VALID_LEVELS, token=token)
     except Exception as e:
