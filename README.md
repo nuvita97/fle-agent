@@ -21,11 +21,12 @@ An AI-powered French language learning platform by **Évoli** that generates per
 |---|---|---|
 | Web framework | Flask + Jinja2 | UI, routing, session management |
 | AI | Claude API (Anthropic SDK) | Generate French texts, MCQs, vocabulary |
-| Database | Supabase (PostgreSQL) | Store exercises and subscribers |
+| Database | Supabase (PostgreSQL) | Store exercises, subscribers, and usage events |
 | Email | Gmail OAuth2 API | Send PDF newsletters |
 | PDF | fpdf2 + DejaVuSans fonts | Build styled, Unicode-safe PDFs |
 | Scheduling | GitHub Actions | Trigger weekly batch jobs reliably |
 | Deployment | Render.com + Gunicorn | Production hosting |
+| Monitoring | Sentry | Error tracking and crash alerts |
 
 ---
 
@@ -135,6 +136,30 @@ Append-only. Each weekly batch inserts 35 new rows.
 ### `fun_facts`
 Cultural facts displayed on exercise pages, keyed by topic.
 
+### `usage_events`
+Append-only event log. Each user action inserts one row.
+
+| Column | Type | Description |
+|---|---|---|
+| `id` | BIGSERIAL | Primary key |
+| `event_type` | TEXT | One of: `generate`, `download`, `subscribe`, `unsubscribe`, `change_subscription`, `submit_answers` |
+| `level` | TEXT | CEFR level if applicable |
+| `topic` | TEXT | Topic key if applicable |
+| `created_at` | TIMESTAMPTZ | Event timestamp |
+
+Useful queries:
+```sql
+-- Daily activity
+SELECT DATE(created_at) AS day, COUNT(*) FROM usage_events GROUP BY day ORDER BY day DESC;
+
+-- Breakdown by event type
+SELECT event_type, COUNT(*) FROM usage_events GROUP BY event_type ORDER BY COUNT(*) DESC;
+
+-- Most popular level + topic combinations
+SELECT level, topic, COUNT(*) FROM usage_events WHERE event_type = 'generate'
+GROUP BY level, topic ORDER BY COUNT(*) DESC;
+```
+
 ---
 
 ## CEFR Levels & Topics
@@ -205,6 +230,31 @@ python app.py
 
 ---
 
+## Monitoring
+
+### Error Tracking (Sentry)
+Unhandled exceptions are automatically captured by [Sentry](https://sentry.io) via the Flask integration. A notification is sent when a new issue occurs.
+
+- Set `SENTRY_DSN` in your `.env` and in Render's environment variables
+- Configure an alert rule in Sentry: Alerts → Create Alert Rule → "A new issue is created" → Send notification
+
+### Usage Analytics (Supabase)
+Every key user action writes a row to the `usage_events` table. See [Database Schema](#usage_events) for queries.
+
+| Event | Trigger |
+|---|---|
+| `generate` | User requests an exercise |
+| `submit_answers` | User clicks "Submit answers" on the exercise page |
+| `download` | User downloads a PDF |
+| `subscribe` | New newsletter signup |
+| `change_subscription` | Subscriber updates level or topic |
+| `unsubscribe` | Subscriber unsubscribes |
+
+### Health Check
+`GET /health` returns `{"status": "ok"}` — set this as the Health Check Path in Render (Service → Settings → Health & Alerts).
+
+---
+
 ## WAT Framework
 
 This project is built on the **WAT framework** — Workflows, Agents, Tools — which separates AI reasoning from deterministic execution:
@@ -241,4 +291,7 @@ ADMIN_TOKEN=
 FLASK_SECRET_KEY=
 BASE_URL=http://localhost:5001
 PUBLIC_URL=https://fle-agent.onrender.com
+
+# Monitoring (optional — no-ops if absent)
+SENTRY_DSN=
 ```

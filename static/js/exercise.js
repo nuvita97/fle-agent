@@ -152,6 +152,13 @@ function submitAnswers(timeUp = false) {
 
   // Scroll to banner
   banner.scrollIntoView({ behavior: "smooth", block: "center" });
+
+  // Track submission (fire-and-forget)
+  fetch("/track", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ event_type: "submit_answers", level: LEVEL, topic: TOPIC }),
+  }).catch(() => {});
 }
 
 // ── Restart ──────────────────────────────────────────────────

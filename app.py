@@ -764,9 +764,14 @@ def admin_trigger_newsletter():
     return jsonify(results)
 
 
-@app.route("/test-error")
-def test_error():
-    raise ValueError("Sentry test error — delete this route after verifying")
+@app.route("/track", methods=["POST"])
+def track():
+    """Lightweight endpoint for client-side usage events (e.g. submit_answers)."""
+    data = request.get_json(silent=True) or {}
+    event_type = data.get("event_type", "")
+    if event_type:
+        _track_usage(event_type, level=data.get("level", ""), topic=data.get("topic", ""))
+    return "", 204
 
 
 @app.route("/health")

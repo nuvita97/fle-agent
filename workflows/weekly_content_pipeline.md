@@ -126,6 +126,15 @@ Inserts one row from the local file — no Claude API call made.
 
 ---
 
+## Monitoring
+
+Errors during the pipeline (PDF failures, email failures, Supabase errors) are captured automatically by Sentry. If a step fails silently, check:
+1. **Sentry dashboard** — Issues feed shows any unhandled exceptions with full stack traces
+2. **Render logs** — `app.logger.error/warning` lines appear in the Render log stream
+3. **Supabase `usage_events`** — newsletter sends do not log to `usage_events`, but `generate`, `subscribe`, and related user actions do
+
+---
+
 ## Related Files
 
 | File | Role |
