@@ -21,7 +21,7 @@ import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 
@@ -137,7 +137,7 @@ def main():
 
     sb = get_supabase()
     python = sys.executable
-    created_at = datetime.now(timezone.utc).isoformat()
+    created_at = datetime.now(timezone(timedelta(hours=2))).isoformat()
 
     print(f"\n{'='*60}")
 

@@ -21,7 +21,7 @@ import re
 import subprocess
 import sys
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 from flask import (
@@ -638,7 +638,7 @@ def subscribe():
             "level": level,
             "topic": topic,
             "token": token,
-            "subscribed_at": datetime.utcnow().isoformat(),
+            "subscribed_at": datetime.now(timezone(timedelta(hours=2))).isoformat(),
         }).execute()
 
     except KeyError:
