@@ -39,13 +39,17 @@ load_dotenv()
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from supabase import create_client as _supabase_create_client
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),        # No-ops cleanly if env var is absent
-    integrations=[FlaskIntegration()],
-    traces_sample_rate=0.0,             # Disable perf tracing (not needed)
-    send_default_pii=False,
-)
+_is_local = os.getenv("BASE_URL", "").startswith("http://localhost")
+if not _is_local:
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.0,
+        send_default_pii=False,
+        spotlight=False,
+    )
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
@@ -362,9 +366,15 @@ def run_tools(level: str, topic: str) -> dict | None:
         return None
 
 
+_supabase_client = None
+
 def _get_supabase():
-    from supabase import create_client  # noqa: PLC0415
-    return create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"])
+    global _supabase_client
+    if _supabase_client is None:
+        _supabase_client = _supabase_create_client(
+            os.environ["SUPABASE_URL"], os.environ["SUPABASE_KEY"]
+        )
+    return _supabase_client
 
 
 def _track_usage(event_type: str, level: str = "", topic: str = "") -> None:
