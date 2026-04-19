@@ -40,12 +40,15 @@ load_dotenv()
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"),        # No-ops cleanly if env var is absent
-    integrations=[FlaskIntegration()],
-    traces_sample_rate=0.0,             # Disable perf tracing (not needed)
-    send_default_pii=False,
-)
+_is_local = os.getenv("BASE_URL", "").startswith("http://localhost")
+if not _is_local:
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=0.0,
+        send_default_pii=False,
+        spotlight=False,
+    )
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
