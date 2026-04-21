@@ -15,6 +15,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
 
@@ -52,6 +53,7 @@ def main():
         "questions":     data.get("questions", []),
         "vocabulary":    data.get("vocabulary", []),
         "open_question": data.get("open_question", ""),
+        "created_at":    datetime.now(timezone(timedelta(hours=2))).replace(tzinfo=None).isoformat(),
     }
 
     try:

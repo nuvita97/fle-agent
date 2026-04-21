@@ -392,6 +392,7 @@ def _track_usage(event_type: str, level: str = "", topic: str = "") -> None:
                 "event_type": event_type,
                 "level": level or None,
                 "topic": topic or None,
+                "created_at": datetime.now(timezone(timedelta(hours=2))).replace(tzinfo=None).isoformat(),
             }).execute()
         except Exception as exc:
             app.logger.warning(f"Usage tracking write failed: {exc}")
@@ -648,7 +649,7 @@ def subscribe():
             "level": level,
             "topic": topic,
             "token": token,
-            "subscribed_at": datetime.now(timezone(timedelta(hours=2))).isoformat(),
+            "subscribed_at": datetime.now(timezone(timedelta(hours=2))).replace(tzinfo=None).isoformat(),
         }).execute()
 
     except KeyError:
