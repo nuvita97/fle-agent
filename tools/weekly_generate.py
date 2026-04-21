@@ -137,7 +137,7 @@ def main():
 
     sb = get_supabase()
     python = sys.executable
-    created_at = datetime.now(timezone(timedelta(hours=2))).isoformat()
+    created_at = datetime.now(timezone(timedelta(hours=2))).replace(tzinfo=None).isoformat()
 
     print(f"\n{'='*60}")
 
