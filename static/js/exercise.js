@@ -159,6 +159,18 @@ function submitAnswers(timeUp = false) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ event_type: "submit_answers", level: LEVEL, topic: TOPIC }),
   }).catch(() => {});
+
+  if (window.posthog) {
+    posthog.capture("submit_answers", {
+      level: LEVEL,
+      topic: TOPIC,
+      score: finalScore,
+      total: TOTAL_Q,
+      score_pct: Math.round((finalScore / TOTAL_Q) * 100),
+      time_remaining_secs: timerSecs,
+      timed_out: timeUp,
+    });
+  }
 }
 
 // ── Restart ──────────────────────────────────────────────────

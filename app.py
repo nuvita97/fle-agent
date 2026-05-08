@@ -384,6 +384,7 @@ def _track_usage(event_type: str, level: str = "", topic: str = "") -> None:
     Failures are logged as warnings but never raise to the caller.
     """
     import threading
+    sid = session.get("session_id")
 
     def _write():
         try:
@@ -392,6 +393,7 @@ def _track_usage(event_type: str, level: str = "", topic: str = "") -> None:
                 "event_type": event_type,
                 "level": level or None,
                 "topic": topic or None,
+                "session_id": sid,
                 "created_at": datetime.now(timezone(timedelta(hours=2))).replace(tzinfo=None).isoformat(),
             }).execute()
         except Exception as exc:
@@ -492,7 +494,9 @@ def send_newsletter_to_all() -> dict:
 @app.context_processor
 def inject_translations():
     lang = session.get("lang", "fr")
-    return {"t": TRANSLATIONS[lang], "lang": lang}
+    if "session_id" not in session:
+        session["session_id"] = str(uuid.uuid4())
+    return {"t": TRANSLATIONS[lang], "lang": lang, "session_id": session["session_id"]}
 
 
 # ---------------------------------------------------------------------------

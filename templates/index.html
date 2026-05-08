@@ -116,3 +116,15 @@
 
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById("generator-form").addEventListener("submit", function () {
+    if (window.posthog) {
+      const level = (document.querySelector('input[name="level"]:checked') || {}).value;
+      const topic = (document.querySelector('input[name="topic"]:checked') || {}).value;
+      posthog.capture("generate", { level: level, topic: topic });
+    }
+  });
+</script>
+{% endblock %}
